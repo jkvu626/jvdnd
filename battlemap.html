@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realm Keeper - Player View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a1a;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        #player-canvas {
+            max-width: 100vw;
+            max-height: 100vh;
+        }
+
+        .no-map {
+            color: #666;
+            font-family: system-ui, sans-serif;
+            font-size: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="player-canvas"></canvas>
+    <script>
+        const canvas = document.getElementById('player-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let state = {
+            background: null,
+            backgroundImage: null,
+            gridSize: 50,
+            showGrid: true,
+            tokens: [],
+            zoom: 1,
+            panX: 0,
+            panY: 0,
+            aoeShapes: [],
+            fogEnabled: false,
+            fogData: null,
+            measurement: null,
+            activeTurnTokenId: null
+        };
+
+        let fogImage = null;
+
+        // Listen for messages from main window
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'BATTLEMAP_SYNC') {
+                updateState(event.data.state);
+            }
+        });
+
+        function updateState(newState) {
+            const bgChanged = newState.background !== state.background;
+            const fogChanged = newState.fogData !== state.fogData;
+            state = { ...state, ...newState };
+
+            if (bgChanged && newState.background) {
+                const img = new Image();
+                img.onload = () => {
+                    state.backgroundImage = img;
+                    resizeCanvas();
+                    loadFogAndRender();
+                };
+                img.src = newState.background;
+            } else if (fogChanged && newState.fogData) {
+                loadFogAndRender();
+            } else {
+                render();
+            }
+        }
+
+        function loadFogAndRender() {
+            if (state.fogEnabled && state.fogData) {
+                const img = new Image();
+                img.onload = () => {
+                    fogImage = img;
+                    render();
+                };
+                img.src = state.fogData;
+            } else {
+                fogImage = null;
+                render();
+            }
+        }
+
+        function resizeCanvas() {
+            if (state.backgroundImage) {
+                const maxW = window.innerWidth;
+                const maxH = window.innerHeight;
+                const imgW = state.backgroundImage.width;
+                const imgH = state.backgroundImage.height;
+
+                const scale = Math.min(maxW / imgW, maxH / imgH);
+                canvas.width = imgW * scale;
+                canvas.height = imgH * scale;
+            } else {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        }
+
+        function renderAoeShapes(ctx, gridSize) {
+            const ftToPixels = gridSize / 5; // 1 grid = 5ft
+
+            state.aoeShapes.forEach(shape => {
+                const centerX = (shape.x + 0.5) * gridSize;
+                const centerY = (shape.y + 0.5) * gridSize;
+                const sizePixels = shape.size * ftToPixels;
+
+                ctx.fillStyle = shape.color;
+                ctx.strokeStyle = shape.color.replace(/[\da-f]{2}\)$/i, 'ff)').replace(/,\s*[\d.]+\)$/, ', 1)');
+                ctx.lineWidth = 2 / state.zoom;
+
+                switch (shape.type) {
+                    case 'circle':
+                        ctx.beginPath();
+                        ctx.arc(centerX, centerY, sizePixels / 2, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+                        break;
+
+                    case 'cube':
+                        ctx.fillRect(
+                            centerX - sizePixels / 2,
+                            centerY - sizePixels / 2,
+                            sizePixels,
+                            sizePixels
+                        );
+                        ctx.strokeRect(
+                            centerX - sizePixels / 2,
+                            centerY - sizePixels / 2,
+                            sizePixels,
+                            sizePixels
+                        );
+                        break;
+
+                    case 'cone':
+                        drawCone(ctx, centerX, centerY, sizePixels, shape.rotation);
+                        break;
+
+                    case 'line':
+                        drawLine(ctx, centerX, centerY, sizePixels, shape.rotation, gridSize);
+                        break;
+                }
+            });
+        }
+
+        function drawCone(ctx, x, y, length, rotation) {
+            const angle = rotation * Math.PI / 180;
+            const spread = Math.PI / 3; // 60 degree cone
+
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.arc(x, y, length, angle - spread / 2, angle + spread / 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        function drawLine(ctx, x, y, length, rotation, gridSize) {
+            const angle = rotation * Math.PI / 180;
+            const width = gridSize; // 5ft wide (1 grid)
+
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.fillRect(0, -width / 2, length, width);
+            ctx.strokeRect(0, -width / 2, length, width);
+            ctx.restore();
+        }
+
+        function renderMeasurement(ctx, gridSize) {
+            if (!state.measurement) return;
+
+            const m = state.measurement;
+            const startX = (m.start.x + 0.5) * gridSize;
+            const startY = (m.start.y + 0.5) * gridSize;
+            const endX = (m.end.x + 0.5) * gridSize;
+            const endY = (m.end.y + 0.5) * gridSize;
+
+            ctx.save();
+            ctx.strokeStyle = '#9B2C2C';
+            ctx.lineWidth = 3 / state.zoom;
+            ctx.setLineDash([10 / state.zoom, 5 / state.zoom]);
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            if (m.distance > 0) {
+                const midX = (startX + endX) / 2;
+                const midY = (startY + endY) / 2;
+                const text = `${m.distance} ft.`;
+
+                ctx.font = `bold ${16 / state.zoom}px system-ui`;
+                const metrics = ctx.measureText(text);
+                const padding = 6 / state.zoom;
+                const pillW = metrics.width + padding * 2;
+                const pillH = 22 / state.zoom;
+
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(midX - pillW / 2, midY - pillH / 2, pillW, pillH, 4 / state.zoom);
+                } else {
+                    ctx.rect(midX - pillW / 2, midY - pillH / 2, pillW, pillH);
+                }
+                ctx.fill();
+
+                ctx.strokeStyle = '#9B2C2C';
+                ctx.lineWidth = 2 / state.zoom;
+                ctx.stroke();
+
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(text, midX, midY);
+            }
+
+            ctx.fillStyle = '#9B2C2C';
+            ctx.beginPath();
+            ctx.arc(startX, startY, 4 / state.zoom, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(endX, endY, 4 / state.zoom, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Apply zoom and pan transforms (convert normalized pan to pixels)
+            ctx.save();
+            ctx.translate(state.panX * canvas.width, state.panY * canvas.height);
+            ctx.scale(state.zoom, state.zoom);
+
+            // Draw background
+            if (state.backgroundImage) {
+                ctx.drawImage(state.backgroundImage, 0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = '#2a2a2a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Calculate scale for grid
+            const scale = state.backgroundImage
+                ? canvas.width / state.backgroundImage.width
+                : 1;
+            const gridSize = state.gridSize * scale;
+
+            // Draw grid
+            if (state.showGrid) {
+                ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+                ctx.lineWidth = 1 / state.zoom;
+
+                for (let x = 0; x <= canvas.width; x += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                for (let y = 0; y <= canvas.height; y += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+            }
+
+            // Draw AOE shapes
+            renderAoeShapes(ctx, gridSize);
+
+            // Draw tokens
+            state.tokens.forEach(token => {
+                // For size 2+ tokens (Large/Huge), center on the corner to occupy 4 squares
+                // For size 1 tokens (Medium), center on the grid square
+                const offset = token.size === 1 ? gridSize / 2 : gridSize;
+                const x = token.x * gridSize + offset;
+                const y = token.y * gridSize + offset;
+                const radius = Math.max(8, (gridSize * token.size) / 2 - 4);
+
+                // Active turn highlight ring
+                if (token.id === state.activeTurnTokenId) {
+                    ctx.save();
+                    ctx.strokeStyle = '#D4AF37';
+                    ctx.lineWidth = 3 / state.zoom;
+                    ctx.shadowColor = '#D4AF37';
+                    ctx.shadowBlur = 12 / state.zoom;
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius + Math.max(4, radius * 0.3), 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                // Token circle
+                ctx.fillStyle = token.color;
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Token border
+                ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+                ctx.lineWidth = 2 / state.zoom;
+                ctx.stroke();
+
+                // Token name
+                ctx.fillStyle = '#fff';
+                ctx.font = `bold ${Math.max(8, radius * 0.8)}px system-ui`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(token.name.substring(0, 3).toUpperCase(), x, y);
+            });
+
+            // Draw ruler measurement
+            renderMeasurement(ctx, gridSize);
+
+            // Draw fog of war (fully opaque for players)
+            if (state.fogEnabled && fogImage) {
+                ctx.drawImage(fogImage, 0, 0, canvas.width, canvas.height);
+            }
+
+            ctx.restore();
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            render();
+        });
+
+        // Initial render
+        resizeCanvas();
+        render();
+    </script>
+</body>
+
+</html>

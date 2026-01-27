@@ -1,0 +1,99 @@
+{
+  "mapId": null,
+  "gridSize": 99,
+  "showGrid": true,
+  "tokens": [
+    {
+      "id": "mkste6onhhiuf5s3mb",
+      "instanceId": "mkste6onhhiuf5s3mb",
+      "name": "Ian Parish",
+      "color": "#3B5998",
+      "size": 1,
+      "x": 0,
+      "y": 0,
+      "slug": null,
+      "combatantId": "mkste6onhhiuf5s3mb"
+    },
+    {
+      "id": "mksu3gbgxku1cz2lhei",
+      "instanceId": "mksu3gbgxku1cz2lhei",
+      "name": "Dan MastroOaf",
+      "color": "#3B5998",
+      "size": 1,
+      "x": 1,
+      "y": 0,
+      "slug": null,
+      "combatantId": "mksu3gbgxku1cz2lhei"
+    },
+    {
+      "id": "mksu3maaw7o7ld29lk",
+      "instanceId": "mksu3maaw7o7ld29lk",
+      "name": "James Blanch",
+      "color": "#3B5998",
+      "size": 1,
+      "x": 2,
+      "y": 0,
+      "slug": null,
+      "combatantId": "mksu3maaw7o7ld29lk"
+    },
+    {
+      "id": "mksu47oks2c7pddemid",
+      "instanceId": "mksu47oks2c7pddemid",
+      "name": "Matt Stone",
+      "color": "#3B5998",
+      "size": 1,
+      "x": 3,
+      "y": 0,
+      "slug": null,
+      "combatantId": "mksu47oks2c7pddemid"
+    },
+    {
+      "id": "mkx0c9u7u25b9s1px4m",
+      "instanceId": "mkx0c9u7u25b9s1px4m",
+      "name": "Goblin 1",
+      "color": "#C84B31",
+      "size": 1,
+      "x": 4,
+      "y": 0,
+      "slug": "goblin-a5e",
+      "combatantId": "mkx0c9u7u25b9s1px4m"
+    },
+    {
+      "id": "mkx0c9u7u2q5etwqaff",
+      "instanceId": "mkx0c9u7u2q5etwqaff",
+      "name": "Goblin 2",
+      "color": "#C84B31",
+      "size": 1,
+      "x": 5,
+      "y": 0,
+      "slug": "goblin-a5e",
+      "combatantId": "mkx0c9u7u2q5etwqaff"
+    },
+    {
+      "id": "mkx0c9ytmbibu5knmmr",
+      "instanceId": "mkx0c9ytmbibu5knmmr",
+      "name": "Goblin Boss",
+      "color": "#C84B31",
+      "size": 1,
+      "x": 6,
+      "y": 0,
+      "slug": "goblin-boss-a5e",
+      "combatantId": "mkx0c9ytmbibu5knmmr"
+    },
+    {
+      "id": "mkx0ca2u9et55h8f0dp",
+      "instanceId": "mkx0ca2u9et55h8f0dp",
+      "name": "Goblin",
+      "color": "#C84B31",
+      "size": 1,
+      "x": 7,
+      "y": 0,
+      "slug": "goblin",
+      "combatantId": "mkx0ca2u9et55h8f0dp"
+    }
+  ],
+  "zoom": 1,
+  "panX": 0,
+  "panY": 0,
+  "savedAt": "2026-01-27T19:46:55.583Z"
+}

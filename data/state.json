@@ -1,0 +1,201 @@
+{
+  "party": [
+    {
+      "id": "mkste6onhhiuf5s3mb",
+      "name": "Ian Parish",
+      "ac": 14,
+      "maxHp": 27,
+      "hp": 27
+    },
+    {
+      "id": "mksu3gbgxku1cz2lhei",
+      "name": "Dan MastroOaf",
+      "ac": 12,
+      "maxHp": 21,
+      "hp": 21
+    },
+    {
+      "id": "mksu3maaw7o7ld29lk",
+      "name": "James Blanch",
+      "ac": 13,
+      "maxHp": 24,
+      "hp": 24
+    },
+    {
+      "id": "mksu47oks2c7pddemid",
+      "name": "Matt Stone",
+      "ac": 13,
+      "maxHp": 21,
+      "hp": 21
+    }
+  ],
+  "encounters": [
+    {
+      "id": "mkpk9fkiwjulx3c4twn",
+      "name": "Test Encounter",
+      "monsters": [
+        {
+          "slug": "goblin-a5e",
+          "name": "Goblin",
+          "cr": "0.25",
+          "qty": 2
+        },
+        {
+          "slug": "goblin-boss-a5e",
+          "name": "Goblin Boss",
+          "cr": "1",
+          "qty": 1
+        },
+        {
+          "slug": "goblin",
+          "name": "Goblin",
+          "cr": "0.25",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "mkstyii2tqalv76637a",
+      "name": "Chase",
+      "monsters": [
+        {
+          "slug": "bandit",
+          "name": "Bandit",
+          "cr": "0.125",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "mku3v1nhf5nwzlgluui",
+      "name": "Wolves",
+      "monsters": [
+        {
+          "slug": "wolf",
+          "name": "Wolf",
+          "cr": "1/4",
+          "qty": 6
+        }
+      ]
+    },
+    {
+      "id": "mkw4re3u5qqq2vnck3x",
+      "name": "Werewolves",
+      "monsters": [
+        {
+          "slug": "werewolf",
+          "name": "Werewolf",
+          "cr": "3",
+          "qty": 2
+        },
+        {
+          "slug": "wolf",
+          "name": "Wolf",
+          "cr": "1/4",
+          "qty": 3
+        },
+        {
+          "slug": "swarm-of-ravens",
+          "name": "Swarm of Ravens",
+          "cr": "0.25",
+          "qty": 2
+        }
+      ]
+    }
+  ],
+  "activeEncounter": {
+    "encounterId": "mkpk9fkiwjulx3c4twn",
+    "combatants": [
+      {
+        "id": "mkx0c9ytmbibu5knmmr",
+        "name": "Goblin Boss",
+        "slug": "goblin-boss-a5e",
+        "initiative": 16,
+        "ac": 16,
+        "hp": 24,
+        "maxHp": 24,
+        "isPlayer": false,
+        "hasToken": true
+      },
+      {
+        "id": "mkx0ca2u9et55h8f0dp",
+        "name": "Goblin",
+        "slug": "goblin",
+        "initiative": 13,
+        "ac": 15,
+        "hp": 7,
+        "maxHp": 7,
+        "isPlayer": false,
+        "hasToken": true
+      },
+      {
+        "id": "mkx0c9u7u25b9s1px4m",
+        "name": "Goblin 1",
+        "slug": "goblin-a5e",
+        "initiative": 12,
+        "ac": 13,
+        "hp": 10,
+        "maxHp": 10,
+        "isPlayer": false,
+        "hasToken": true
+      },
+      {
+        "id": "mkste6onhhiuf5s3mb",
+        "name": "Ian Parish",
+        "slug": null,
+        "initiative": 10,
+        "ac": 14,
+        "hp": 27,
+        "maxHp": 27,
+        "isPlayer": true,
+        "hasToken": false
+      },
+      {
+        "id": "mksu3gbgxku1cz2lhei",
+        "name": "Dan MastroOaf",
+        "slug": null,
+        "initiative": 10,
+        "ac": 12,
+        "hp": 21,
+        "maxHp": 21,
+        "isPlayer": true,
+        "hasToken": false
+      },
+      {
+        "id": "mksu3maaw7o7ld29lk",
+        "name": "James Blanch",
+        "slug": null,
+        "initiative": 10,
+        "ac": 13,
+        "hp": 24,
+        "maxHp": 24,
+        "isPlayer": true,
+        "hasToken": false
+      },
+      {
+        "id": "mksu47oks2c7pddemid",
+        "name": "Matt Stone",
+        "slug": null,
+        "initiative": 10,
+        "ac": 13,
+        "hp": 21,
+        "maxHp": 21,
+        "isPlayer": true,
+        "hasToken": false
+      },
+      {
+        "id": "mkx0c9u7u2q5etwqaff",
+        "name": "Goblin 2",
+        "slug": "goblin-a5e",
+        "initiative": 7,
+        "ac": 13,
+        "hp": 10,
+        "maxHp": 10,
+        "isPlayer": false,
+        "hasToken": true
+      }
+    ],
+    "currentTurn": 0,
+    "round": 1
+  }
+}

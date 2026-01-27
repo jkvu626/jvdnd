@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realm Keeper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/battlemap.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-branding">
+                <img src="assets/logo.png" alt="Realm Keeper Logo" class="header-logo">
+                <h1>Realm Keeper</h1>
+            </div>
+            <div id="combat-indicator" class="combat-indicator hidden">
+                <button id="btn-prev-turn-indicator" class="btn-indicator" title="Previous Turn">◀</button>
+                <span class="combat-pulse"></span>
+                <span id="combat-indicator-text">Combat Active</span>
+                <button id="btn-next-turn-indicator" class="btn-indicator" title="Next Turn">▶</button>
+            </div>
+            <nav class="mode-toggle">
+                <button id="btn-prep-mode" class="mode-btn active">Prep</button>
+                <button id="btn-map-mode" class="mode-btn">Map</button>
+                <button id="btn-party-mode" class="mode-btn">Party</button>
+                <button id="btn-bestiary-mode" class="mode-btn">Bestiary</button>
+                <button id="btn-spellbook-mode" class="mode-btn">Spellbook</button>
+            </nav>
+        </header>
+
+        <!-- Prep Mode -->
+        <main id="prep-mode" class="mode-view active">
+            <aside class="encounters-sidebar">
+                <h2>Encounters</h2>
+                <button id="btn-new-encounter" class="btn-primary">+ New Encounter</button>
+                <button id="btn-import-monster" class="btn-secondary">📥 Import Monster</button>
+                <ul id="encounters-list" class="encounters-list"></ul>
+            </aside>
+            <section class="encounter-editor">
+                <div id="no-encounter-selected" class="empty-state">
+                    <p>Select an encounter or create a new one</p>
+                </div>
+                <div id="encounter-form" class="hidden">
+                    <input type="text" id="encounter-name" placeholder="Encounter name..." class="encounter-name-input">
+
+                    <div class="monster-search">
+                        <input type="text" id="monster-search" placeholder="Search monsters...">
+                        <div id="search-results" class="search-results hidden"></div>
+                    </div>
+
+                    <div class="combatants-section">
+                        <h3>Monsters</h3>
+                        <div id="encounter-monsters" class="combatants-list"></div>
+                    </div>
+
+                    <div class="encounter-actions">
+                        <button id="btn-save-encounter" class="btn-primary">Save</button>
+                        <button id="btn-run-encounter" class="btn-secondary">Run Encounter</button>
+                        <button id="btn-delete-encounter" class="btn-danger">Delete</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Party Mode -->
+        <main id="party-mode" class="mode-view hidden">
+            <section class="party-editor">
+                <h2>Your Party</h2>
+                <p class="helper-text">These characters are automatically added to every encounter.</p>
+
+                <div class="add-party-member">
+                    <input type="text" id="pc-name" placeholder="Character name">
+                    <input type="number" id="pc-ac" placeholder="AC" min="1" max="30">
+                    <input type="number" id="pc-hp" placeholder="Max HP" min="1">
+                    <button id="btn-add-pc" class="btn-primary">Add</button>
+                </div>
+
+                <div id="party-list" class="party-list"></div>
+            </section>
+        </main>
+
+        <!-- Bestiary Mode -->
+        <main id="bestiary-mode" class="mode-view hidden">
+            <aside class="bestiary-sidebar">
+                <h2>Monster Search</h2>
+                <div class="bestiary-search">
+                    <input type="text" id="bestiary-search-input" placeholder="Search for a monster...">
+                    <div id="bestiary-search-results" class="bestiary-results"></div>
+                </div>
+
+                <div class="custom-monsters-section">
+                    <h2>Custom Monsters</h2>
+                    <p class="helper-text">Monsters you've imported</p>
+                    <div id="custom-monsters-list" class="custom-monsters-list"></div>
+                </div>
+            </aside>
+            <section class="bestiary-statblock-section">
+                <div id="bestiary-statblock" class="statblock-panel">
+                    <p class="empty-state">Search for a monster to view its statblock</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Spellbook Mode -->
+        <main id="spellbook-mode" class="mode-view hidden">
+            <aside class="spellbook-sidebar">
+                <h2>Spell Search</h2>
+
+                <!-- Search Box -->
+                <div class="spellbook-search">
+                    <input type="text" id="spell-search-input" placeholder="Search spells...">
+                </div>
+
+                <!-- Filters -->
+                <div class="spell-filters">
+                    <div class="filter-row">
+                        <label for="spell-level-filter">Level:</label>
+                        <select id="spell-level-filter">
+                            <option value="all">All Levels</option>
+                            <option value="0">Cantrip</option>
+                            <option value="1">1st</option>
+                            <option value="2">2nd</option>
+                            <option value="3">3rd</option>
+                            <option value="4">4th</option>
+                            <option value="5">5th</option>
+                            <option value="6">6th</option>
+                            <option value="7">7th</option>
+                            <option value="8">8th</option>
+                            <option value="9">9th</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-row">
+                        <label for="spell-school-filter">School:</label>
+                        <select id="spell-school-filter">
+                            <option value="all">All Schools</option>
+                            <option value="abjuration">Abjuration</option>
+                            <option value="conjuration">Conjuration</option>
+                            <option value="divination">Divination</option>
+                            <option value="enchantment">Enchantment</option>
+                            <option value="evocation">Evocation</option>
+                            <option value="illusion">Illusion</option>
+                            <option value="necromancy">Necromancy</option>
+                            <option value="transmutation">Transmutation</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-row">
+                        <label for="spell-class-filter">Class:</label>
+                        <select id="spell-class-filter">
+                            <option value="all">All Classes</option>
+                            <option value="bard">Bard</option>
+                            <option value="cleric">Cleric</option>
+                            <option value="druid">Druid</option>
+                            <option value="paladin">Paladin</option>
+                            <option value="ranger">Ranger</option>
+                            <option value="sorcerer">Sorcerer</option>
+                            <option value="warlock">Warlock</option>
+                            <option value="wizard">Wizard</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-checkboxes">
+                        <label class="checkbox-filter">
+                            <input type="checkbox" id="spell-concentration-filter">
+                            <span>&#x27F3;</span> Concentration
+                        </label>
+                        <label class="checkbox-filter">
+                            <input type="checkbox" id="spell-ritual-filter">
+                            <span>&#x1F4D6;</span> Ritual
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Import Custom Spell -->
+                <button id="btn-import-spell" class="btn-secondary">+ Import Custom Spell</button>
+
+                <!-- Results List -->
+                <div class="spell-results-header">
+                    <span id="spell-results-count">Loading...</span>
+                </div>
+                <div id="spell-results" class="spell-results virtual-scroll-container">
+                    <!-- Virtual scroll content rendered here -->
+                </div>
+            </aside>
+
+            <section class="spellbook-detail-section">
+                <div id="spell-detail" class="spell-detail-panel">
+                    <p class="empty-state">Search for a spell to view its details</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Map / Command Center Mode -->
+        <main id="map-mode" class="mode-view hidden">
+            <!-- Left Sidebar: Tabbed (Map Tools | Initiative) -->
+            <button class="cc-left-sidebar-toggle" id="btn-expand-left" title="Expand sidebar">›</button>
+            <aside class="cc-left-sidebar" id="cc-left-sidebar">
+                <div class="cc-sidebar-tabs">
+                    <button class="cc-tab active" data-tab="map-tools">Map Tools</button>
+                    <button class="cc-tab" data-tab="initiative">Initiative</button>
+                    <button class="cc-sidebar-collapse" id="btn-collapse-left" title="Collapse sidebar">‹</button>
+                </div>
+
+                <!-- Tab: Map Tools -->
+                <div class="cc-tab-content active" id="tab-map-tools">
+
+                    <div class="map-controls">
+                        <h3>Tools</h3>
+                        <div class="tool-row">
+                            <button id="btn-tool-select" class="btn-tool active" title="Select/Move">&#x1F446;</button>
+                            <button id="btn-tool-ruler" class="btn-tool" title="Ruler">&#x1F4CF;</button>
+                        </div>
+                    </div>
+
+                    <div class="map-controls">
+                        <h3>AOE Tools</h3>
+                        <div class="aoe-toolbar">
+                            <button id="aoe-circle" class="btn-tool" title="Circle/Sphere">⭕</button>
+                            <button id="aoe-cone" class="btn-tool" title="Cone">📐</button>
+                            <button id="aoe-cube" class="btn-tool" title="Cube">⬜</button>
+                            <button id="aoe-line" class="btn-tool" title="Line">➖</button>
+                        </div>
+                        <div class="aoe-options">
+                            <input type="color" id="aoe-color" value="#ff6600" title="AOE Color">
+                            <input type="number" id="aoe-size" value="20" min="5" max="120" step="5">
+                            <span class="aoe-unit">ft</span>
+                        </div>
+                        <button id="aoe-clear-all" class="btn-small btn-danger">Clear All AOE</button>
+                    </div>
+
+                    <div class="map-controls">
+                        <h3>Fog of War</h3>
+                        <label class="fog-toggle">
+                            <input type="checkbox" id="fog-toggle">
+                            Enable Fog of War
+                        </label>
+                        <div class="fog-tools">
+                            <button id="fog-reveal" class="btn-tool" title="Reveal areas">👁️</button>
+                            <button id="fog-hide" class="btn-tool" title="Hide areas">🌫️</button>
+                            <input type="range" id="fog-brush" min="1" max="10" value="2" title="Brush size">
+                            <span id="fog-brush-display" class="brush-size">2</span>
+                        </div>
+                        <div class="fog-actions">
+                            <button id="fog-reveal-all" class="btn-small">Reveal All</button>
+                            <button id="fog-hide-all" class="btn-small">Hide All</button>
+                        </div>
+                    </div>
+
+                    <div class="map-controls">
+                        <h3>Add Token</h3>
+                        <input type="text" id="token-name" placeholder="Token name">
+                        <div class="token-options">
+                            <select id="token-color">
+                                <option value="#C84B31">Red</option>
+                                <option value="#2E5D4B">Green</option>
+                                <option value="#3B5998">Blue</option>
+                                <option value="#D4AF37">Gold</option>
+                                <option value="#6B4C9A">Purple</option>
+                                <option value="#2C211B">Black</option>
+                            </select>
+                            <select id="token-size">
+                                <option value="1">Small (1)</option>
+                                <option value="1" selected>Medium (1)</option>
+                                <option value="2">Large (2)</option>
+                                <option value="3">Huge (3)</option>
+                            </select>
+                        </div>
+                        <button id="btn-add-token" class="btn-primary">Add Token</button>
+                    </div>
+
+                    <div class="token-list">
+                        <div class="token-list-header">
+                            <h3>Tokens</h3>
+                            <button id="btn-clear-tokens" class="btn-small btn-danger">Clear All</button>
+                        </div>
+                        <ul id="token-list"></ul>
+                    </div>
+                </div>
+
+                <!-- Tab: Initiative -->
+                <div class="cc-tab-content" id="tab-initiative">
+                    <div id="no-active-encounter" class="empty-state">
+                        <p>No encounter running.</p>
+                    </div>
+                    <div id="combat-view" class="hidden">
+                        <div class="panel-header">
+                            <h2>Initiative</h2>
+                            <div class="turn-controls">
+                                <button id="btn-prev-turn" class="btn-small">◀</button>
+                                <button id="btn-next-turn" class="btn-small">▶</button>
+                            </div>
+                        </div>
+                        <ul id="initiative-list" class="initiative-list"></ul>
+                        <button id="btn-end-encounter" class="btn-danger">End Encounter</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center: Canvas -->
+            <section class="map-canvas-container">
+                <canvas id="battlemap-canvas"></canvas>
+                <p class="map-hint">Click to place tokens • Right-click to remove • Drag to move</p>
+
+
+
+                <div class="map-bottom-controls">
+                    <div class="map-controls">
+                        <h3>Background</h3>
+                        <input type="file" id="map-bg-upload" accept="image/*" class="hidden">
+                        <button id="btn-upload-bg" class="btn-secondary">Upload Image</button>
+                        <button id="btn-clear-bg" class="btn-small">Clear</button>
+                    </div>
+
+                    <div class="map-controls">
+                        <h3>Library</h3>
+                        <button id="btn-open-library" class="btn-secondary">Open Map Library</button>
+                    </div>
+
+                    <div class="map-controls">
+                        <h3>Grid</h3>
+                        <label class="grid-toggle">
+                            <input type="checkbox" id="grid-toggle" checked>
+                            Show Grid
+                        </label>
+                        <div class="grid-size-control">
+                            <label>Size: <span id="grid-size-display">50</span>px</label>
+                            <input type="range" id="grid-size" min="20" max="100" value="50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="map-actions-bar">
+                    <button id="btn-open-player-view" class="btn-primary player-view-btn">Open Player View</button>
+                </div>
+            </section>
+
+            <!-- Right Sidebar: Statblock + Dice -->
+            <aside class="cc-right-sidebar" id="cc-right-sidebar">
+                <button class="cc-sidebar-toggle" id="btn-toggle-right-sidebar" title="Toggle sidebar">&#x276E;</button>
+                <section class="statblock-section">
+                    <div id="active-statblock" class="statblock-panel">
+                        <p class="empty-state">Click a combatant to view statblock</p>
+                    </div>
+                </section>
+                <aside class="dice-sidebar">
+                    <h3>🎲 Dice Roller</h3>
+
+                    <!-- Dice Selection Buttons -->
+                    <div class="dice-buttons">
+                        <button class="dice-btn" data-die="4">d4</button>
+                        <button class="dice-btn" data-die="6">d6</button>
+                        <button class="dice-btn" data-die="8">d8</button>
+                        <button class="dice-btn" data-die="10">d10</button>
+                        <button class="dice-btn" data-die="12">d12</button>
+                        <button class="dice-btn" data-die="20">d20</button>
+                        <button class="dice-btn" data-die="100">d100</button>
+                    </div>
+
+                    <!-- Selected Dice Display -->
+                    <div class="dice-tray">
+                        <div id="selected-dice" class="selected-dice">
+                            <span class="empty-tray">Click dice to add</span>
+                        </div>
+                        <button id="btn-clear-dice" class="btn-small" title="Clear all">✕</button>
+                    </div>
+
+                    <!-- Modifier Control -->
+                    <div class="modifier-control">
+                        <label>Modifier:</label>
+                        <button id="mod-minus" class="btn-small">−</button>
+                        <input type="number" id="dice-modifier" value="0" min="-20" max="20">
+                        <button id="mod-plus" class="btn-small">+</button>
+                    </div>
+
+                    <!-- Advantage Toggle (for d20 rolls) -->
+                    <div id="advantage-toggle" class="advantage-toggle hidden">
+                        <label class="radio-option">
+                            <input type="radio" name="roll-mode" value="normal" checked> Normal
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="roll-mode" value="advantage"> Advantage
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="roll-mode" value="disadvantage"> Disadvantage
+                        </label>
+                    </div>
+
+                    <!-- Roll Button -->
+                    <button id="btn-roll-dice" class="btn-primary btn-roll">🎲 ROLL 🎲</button>
+
+                    <!-- Quick Notation Input (for power users) -->
+                    <div class="quick-input">
+                        <input type="text" id="dice-input" placeholder="Or type: 2d6+3">
+                    </div>
+
+                    <!-- Results -->
+                    <div id="dice-results" class="dice-results"></div>
+                </aside>
+            </aside>
+        </main>
+
+        <!-- Initiative Input Modal -->
+        <div id="initiative-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Roll Initiative</h2>
+                <p>Enter initiative rolls for your players:</p>
+                <div id="initiative-inputs"></div>
+                <button id="btn-start-combat" class="btn-primary">Start Combat</button>
+            </div>
+        </div>
+
+        <!-- Import Statblock Modal -->
+        <div id="import-modal" class="modal hidden">
+            <div class="modal-content modal-large">
+                <h2>📥 Import Custom Monster</h2>
+                <p>Paste any D&D 5e statblock below. AI will convert it automatically.</p>
+                <textarea id="import-text" placeholder="Paste statblock here...
+Example:
+Goblin
+Small humanoid, neutral evil
+AC 15 (leather armor, shield)
+HP 7 (2d6)
+..."></textarea>
+                <div class="import-actions">
+                    <button id="btn-parse-import" class="btn-primary">Parse</button>
+                    <button id="btn-cancel-import" class="btn-secondary">Cancel</button>
+                </div>
+                <div id="import-preview" class="import-preview">
+                    <p class="empty-state">Paste a statblock above and click Parse</p>
+                </div>
+                <button id="btn-save-import" class="btn-primary btn-save-import" disabled>Save Monster</button>
+            </div>
+        </div>
+
+        <!-- Import Spell Modal -->
+        <div id="import-spell-modal" class="modal hidden">
+            <div class="modal-content modal-large">
+                <h2>Import Custom Spell</h2>
+                <p>Paste spell data in JSON format:</p>
+                <textarea id="import-spell-text" placeholder='{
+  "name": "Eldritch Blast",
+  "spell_level": 0,
+  "school": "evocation",
+  "casting_time": "1 action",
+  "range": "120 feet",
+  "components": "V, S",
+  "duration": "Instantaneous",
+  "desc": "A beam of crackling energy streaks toward a creature...",
+  "dnd_class": "Warlock"
+}'></textarea>
+                <div class="import-actions">
+                    <button id="btn-save-spell-import" class="btn-primary">Save Spell</button>
+                    <button id="btn-cancel-spell-import" class="btn-secondary">Cancel</button>
+                </div>
+                <div id="spell-import-error" class="import-error hidden"></div>
+            </div>
+        </div>
+
+        <!-- Map Library Modal -->
+        <div id="map-library-modal" class="modal hidden">
+            <div class="modal-content modal-large">
+                <h2>Map Library</h2>
+                <div class="library-header">
+                    <input type="text" id="map-search" placeholder="Search maps...">
+                    <button id="btn-upload-to-library" class="btn-primary">Upload New Map</button>
+                    <input type="file" id="map-library-upload" accept="image/*" class="hidden">
+                </div>
+                <div id="map-library-grid" class="map-grid">
+                    <p id="map-library-empty" class="empty-state">No maps yet. Upload your first map!</p>
+                </div>
+                <div class="modal-actions">
+                    <button id="btn-close-library" class="btn-secondary">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dice.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/battlemap.js"></script>
+    <script src="js/spellbook.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
