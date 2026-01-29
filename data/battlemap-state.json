@@ -1,99 +1,143 @@
 {
-  "mapId": null,
-  "gridSize": 99,
+  "mapId": "e7137cd88523f636",
+  "gridSize": 66,
   "showGrid": true,
   "tokens": [
     {
-      "id": "mkste6onhhiuf5s3mb",
-      "instanceId": "mkste6onhhiuf5s3mb",
+      "id": "pc_ian_parish",
+      "instanceId": "pc_ian_parish",
       "name": "Ian Parish",
       "color": "#3B5998",
       "size": 1,
-      "x": 0,
-      "y": 0,
+      "x": 24,
+      "y": 11,
       "slug": null,
-      "combatantId": "mkste6onhhiuf5s3mb"
+      "combatantId": "pc_ian_parish"
     },
     {
-      "id": "mksu3gbgxku1cz2lhei",
-      "instanceId": "mksu3gbgxku1cz2lhei",
+      "id": "pc_dan_mastrooaf",
+      "instanceId": "pc_dan_mastrooaf",
       "name": "Dan MastroOaf",
       "color": "#3B5998",
       "size": 1,
-      "x": 1,
-      "y": 0,
+      "x": 21,
+      "y": 12,
       "slug": null,
-      "combatantId": "mksu3gbgxku1cz2lhei"
+      "combatantId": "pc_dan_mastrooaf"
     },
     {
-      "id": "mksu3maaw7o7ld29lk",
-      "instanceId": "mksu3maaw7o7ld29lk",
+      "id": "pc_james_blanch",
+      "instanceId": "pc_james_blanch",
       "name": "James Blanch",
       "color": "#3B5998",
       "size": 1,
-      "x": 2,
-      "y": 0,
+      "x": 22,
+      "y": 9,
       "slug": null,
-      "combatantId": "mksu3maaw7o7ld29lk"
+      "combatantId": "pc_james_blanch"
     },
     {
-      "id": "mksu47oks2c7pddemid",
-      "instanceId": "mksu47oks2c7pddemid",
+      "id": "pc_matt_stone",
+      "instanceId": "pc_matt_stone",
       "name": "Matt Stone",
       "color": "#3B5998",
       "size": 1,
-      "x": 3,
-      "y": 0,
+      "x": 20,
+      "y": 9,
       "slug": null,
-      "combatantId": "mksu47oks2c7pddemid"
+      "combatantId": "pc_matt_stone"
     },
     {
-      "id": "mkx0c9u7u25b9s1px4m",
-      "instanceId": "mkx0c9u7u25b9s1px4m",
-      "name": "Goblin 1",
-      "color": "#C84B31",
+      "id": "char_1769621973694",
+      "instanceId": "char_1769621973694",
+      "name": "Ireena Kolyana",
+      "color": "#2E5D4B",
       "size": 1,
-      "x": 4,
-      "y": 0,
-      "slug": "goblin-a5e",
-      "combatantId": "mkx0c9u7u25b9s1px4m"
+      "x": 18,
+      "y": 11,
+      "slug": null,
+      "combatantId": "char_1769621973694"
     },
     {
-      "id": "mkx0c9u7u2q5etwqaff",
-      "instanceId": "mkx0c9u7u2q5etwqaff",
-      "name": "Goblin 2",
+      "id": "mkyn2s31o39kwhqta2l",
+      "instanceId": "mkyn2s31o39kwhqta2l",
+      "name": "Werewolf 1",
       "color": "#C84B31",
       "size": 1,
-      "x": 5,
-      "y": 0,
-      "slug": "goblin-a5e",
-      "combatantId": "mkx0c9u7u2q5etwqaff"
+      "x": 28,
+      "y": 7,
+      "slug": "werewolf",
+      "combatantId": "mkyn2s31o39kwhqta2l"
     },
     {
-      "id": "mkx0c9ytmbibu5knmmr",
-      "instanceId": "mkx0c9ytmbibu5knmmr",
-      "name": "Goblin Boss",
+      "id": "mkyn2s31qgc6lxeqbv",
+      "instanceId": "mkyn2s31qgc6lxeqbv",
+      "name": "Werewolf 2",
       "color": "#C84B31",
       "size": 1,
-      "x": 6,
-      "y": 0,
-      "slug": "goblin-boss-a5e",
-      "combatantId": "mkx0c9ytmbibu5knmmr"
+      "x": 15,
+      "y": 9,
+      "slug": "werewolf",
+      "combatantId": "mkyn2s31qgc6lxeqbv"
     },
     {
-      "id": "mkx0ca2u9et55h8f0dp",
-      "instanceId": "mkx0ca2u9et55h8f0dp",
-      "name": "Goblin",
+      "id": "mkyn2s319t2hc4j784",
+      "instanceId": "mkyn2s319t2hc4j784",
+      "name": "Wolf 1",
       "color": "#C84B31",
       "size": 1,
-      "x": 7,
+      "x": 29,
+      "y": 15,
+      "slug": "wolf",
+      "combatantId": "mkyn2s319t2hc4j784"
+    },
+    {
+      "id": "mkyn2s32zcn71ssf1wq",
+      "instanceId": "mkyn2s32zcn71ssf1wq",
+      "name": "Wolf 2",
+      "color": "#C84B31",
+      "size": 1,
+      "x": 17,
+      "y": 5,
+      "slug": "wolf",
+      "combatantId": "mkyn2s32zcn71ssf1wq"
+    },
+    {
+      "id": "mkyn2s32zqsghdcfabl",
+      "instanceId": "mkyn2s32zqsghdcfabl",
+      "name": "Wolf 3",
+      "color": "#C84B31",
+      "size": 1,
+      "x": 16,
+      "y": 16,
+      "slug": "wolf",
+      "combatantId": "mkyn2s32zqsghdcfabl"
+    },
+    {
+      "id": "mkyn2s32g0yyvz6vrqo",
+      "instanceId": "mkyn2s32g0yyvz6vrqo",
+      "name": "Swarm of Ravens 1",
+      "color": "#C84B31",
+      "size": 1,
+      "x": 10,
       "y": 0,
-      "slug": "goblin",
-      "combatantId": "mkx0ca2u9et55h8f0dp"
+      "slug": "swarm-of-ravens",
+      "combatantId": "mkyn2s32g0yyvz6vrqo"
+    },
+    {
+      "id": "mkyn2s32kd6bvu3eupp",
+      "instanceId": "mkyn2s32kd6bvu3eupp",
+      "name": "Swarm of Ravens 2",
+      "color": "#C84B31",
+      "size": 1,
+      "x": 11,
+      "y": 0,
+      "slug": "swarm-of-ravens",
+      "combatantId": "mkyn2s32kd6bvu3eupp"
     }
   ],
-  "zoom": 1,
-  "panX": 0,
-  "panY": 0,
-  "savedAt": "2026-01-27T19:46:55.583Z"
+  "zoom": 1.2000000000000002,
+  "panX": -0.03836206896551727,
+  "panY": -0.04389450867052017,
+  "savedAt": "2026-01-29T00:13:43.367Z"
 }

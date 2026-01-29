@@ -100,47 +100,75 @@
           "cr": "0.25",
           "qty": 2
         }
-      ]
+      ],
+      "linkedMapId": "e7137cd88523f636"
+    },
+    {
+      "id": "mkx2cnjrbhav7442u4",
+      "name": "New Encounter",
+      "monsters": []
     }
   ],
   "activeEncounter": {
-    "encounterId": "mkpk9fkiwjulx3c4twn",
+    "encounterId": "mkw4re3u5qqq2vnck3x",
     "combatants": [
       {
-        "id": "mkx0c9ytmbibu5knmmr",
-        "name": "Goblin Boss",
-        "slug": "goblin-boss-a5e",
-        "initiative": 16,
-        "ac": 16,
+        "id": "mkyn2s32zcn71ssf1wq",
+        "name": "Wolf 2",
+        "slug": "wolf",
+        "initiative": 21,
+        "ac": 13,
+        "hp": 11,
+        "maxHp": 11,
+        "isPlayer": false,
+        "hasToken": true
+      },
+      {
+        "id": "mkyn2s32zqsghdcfabl",
+        "name": "Wolf 3",
+        "slug": "wolf",
+        "initiative": 19,
+        "ac": 13,
+        "hp": 11,
+        "maxHp": 11,
+        "isPlayer": false,
+        "hasToken": true
+      },
+      {
+        "id": "mkyn2s32kd6bvu3eupp",
+        "name": "Swarm of Ravens 2",
+        "slug": "swarm-of-ravens",
+        "initiative": 19,
+        "ac": 12,
         "hp": 24,
         "maxHp": 24,
         "isPlayer": false,
         "hasToken": true
       },
       {
-        "id": "mkx0ca2u9et55h8f0dp",
-        "name": "Goblin",
-        "slug": "goblin",
-        "initiative": 13,
-        "ac": 15,
-        "hp": 7,
-        "maxHp": 7,
-        "isPlayer": false,
-        "hasToken": true
-      },
-      {
-        "id": "mkx0c9u7u25b9s1px4m",
-        "name": "Goblin 1",
-        "slug": "goblin-a5e",
+        "id": "mkyn2s319t2hc4j784",
+        "name": "Wolf 1",
+        "slug": "wolf",
         "initiative": 12,
         "ac": 13,
-        "hp": 10,
-        "maxHp": 10,
+        "hp": 11,
+        "maxHp": 11,
         "isPlayer": false,
         "hasToken": true
       },
       {
-        "id": "mkste6onhhiuf5s3mb",
+        "id": "mkyn2s31o39kwhqta2l",
+        "name": "Werewolf 1",
+        "slug": "werewolf",
+        "initiative": 11,
+        "ac": 12,
+        "hp": 84,
+        "maxHp": 84,
+        "isPlayer": false,
+        "hasToken": true
+      },
+      {
+        "id": "pc_ian_parish",
         "name": "Ian Parish",
         "slug": null,
         "initiative": 10,
@@ -148,10 +176,13 @@
         "hp": 27,
         "maxHp": 27,
         "isPlayer": true,
-        "hasToken": false
+        "isSidekick": false,
+        "isNpc": false,
+        "hasToken": false,
+        "characterType": "player"
       },
       {
-        "id": "mksu3gbgxku1cz2lhei",
+        "id": "pc_dan_mastrooaf",
         "name": "Dan MastroOaf",
         "slug": null,
         "initiative": 10,
@@ -159,10 +190,13 @@
         "hp": 21,
         "maxHp": 21,
         "isPlayer": true,
-        "hasToken": false
+        "isSidekick": false,
+        "isNpc": false,
+        "hasToken": false,
+        "characterType": "player"
       },
       {
-        "id": "mksu3maaw7o7ld29lk",
+        "id": "pc_james_blanch",
         "name": "James Blanch",
         "slug": null,
         "initiative": 10,
@@ -170,10 +204,13 @@
         "hp": 24,
         "maxHp": 24,
         "isPlayer": true,
-        "hasToken": false
+        "isSidekick": false,
+        "isNpc": false,
+        "hasToken": false,
+        "characterType": "player"
       },
       {
-        "id": "mksu47oks2c7pddemid",
+        "id": "pc_matt_stone",
         "name": "Matt Stone",
         "slug": null,
         "initiative": 10,
@@ -181,16 +218,44 @@
         "hp": 21,
         "maxHp": 21,
         "isPlayer": true,
-        "hasToken": false
+        "isSidekick": false,
+        "isNpc": false,
+        "hasToken": false,
+        "characterType": "player"
       },
       {
-        "id": "mkx0c9u7u2q5etwqaff",
-        "name": "Goblin 2",
-        "slug": "goblin-a5e",
+        "id": "char_1769621973694",
+        "name": "Ireena Kolyana",
+        "slug": null,
+        "initiative": 10,
+        "ac": 15,
+        "hp": 24,
+        "maxHp": 24,
+        "isPlayer": false,
+        "isSidekick": true,
+        "isNpc": false,
+        "hasToken": false,
+        "characterType": "sidekick"
+      },
+      {
+        "id": "mkyn2s32g0yyvz6vrqo",
+        "name": "Swarm of Ravens 1",
+        "slug": "swarm-of-ravens",
         "initiative": 7,
-        "ac": 13,
-        "hp": 10,
-        "maxHp": 10,
+        "ac": 12,
+        "hp": 24,
+        "maxHp": 24,
+        "isPlayer": false,
+        "hasToken": true
+      },
+      {
+        "id": "mkyn2s31qgc6lxeqbv",
+        "name": "Werewolf 2",
+        "slug": "werewolf",
+        "initiative": 5,
+        "ac": 12,
+        "hp": 84,
+        "maxHp": 84,
         "isPlayer": false,
         "hasToken": true
       }

@@ -43,7 +43,10 @@ const Battlemap = {
         activeTurnTokenId: null,
         // Roll popups and glow
         rollPopups: [],   // { tokenId, text, type, timestamp, x, y }
-        tokenGlows: {}    // { tokenId: { color, timestamp } }
+        tokenGlows: {},   // { tokenId: { color, timestamp } }
+        // Map mode (explore vs combat)
+        mode: 'combat',   // 'explore' or 'combat' - default to combat for backward compat
+        hoveredTokenId: null  // Track hovered token for explore mode HP display
     },
 
     fogCanvas: null,
@@ -72,6 +75,41 @@ const Battlemap = {
         // Restore saved state on init
         await this.restoreState();
     },
+
+    // ============ Map Modes (Explore vs Combat) ============
+
+    setMode(newMode) {
+        if (this.state.mode === newMode) return;
+
+        const oldMode = this.state.mode;
+        this.state.mode = newMode;
+
+        // Mode-specific setup
+        if (newMode === 'explore') {
+            // In explore mode, hide grid by default
+            // (can still be toggled manually)
+        }
+
+        this.render();
+        this.emitModeChange(oldMode, newMode);
+        this.syncPlayerView();
+        this.scheduleAutoSave();
+    },
+
+    emitModeChange(oldMode, newMode) {
+        document.dispatchEvent(new CustomEvent('battlemapModeChange', {
+            detail: { oldMode, newMode }
+        }));
+    },
+
+    isExploreMode() {
+        return this.state.mode === 'explore';
+    },
+
+    isCombatMode() {
+        return this.state.mode === 'combat';
+    },
+
 
     setupEventListeners() {
         // Background upload
@@ -228,6 +266,17 @@ const Battlemap = {
             if (this.state.aoePreview) {
                 this.handleAoeRotation(e);
             }
+
+            // Token hover detection (for explore mode HP display)
+            if (this.state.mode === 'explore' && !this.state.isPanning && !this.state.measurement) {
+                const coords = this.getGridCoords(e);
+                const hoveredToken = this.getTokenAt(coords.x, coords.y);
+                const newHoveredId = hoveredToken ? hoveredToken.id : null;
+                if (newHoveredId !== this.state.hoveredTokenId) {
+                    this.state.hoveredTokenId = newHoveredId;
+                    this.render();
+                }
+            }
         });
 
         this.canvas.addEventListener('mouseup', (e) => {
@@ -364,9 +413,7 @@ const Battlemap = {
     },
 
     renderAoeShapes(ctx) {
-        const scale = this.state.backgroundImage
-            ? this.canvas.width / this.state.backgroundImage.width
-            : 1;
+        const scale = this.getMapScale();
         const gridSize = this.state.gridSize * scale;
         const ftToPixels = gridSize / 5; // 1 grid = 5ft
 
@@ -707,9 +754,7 @@ const Battlemap = {
         if (!this.state.fogEnabled || !this.state.fogTool) return;
 
         const coords = this.getCanvasCoords(e);
-        const scale = this.state.backgroundImage
-            ? this.canvas.width / this.state.backgroundImage.width
-            : 1;
+        const scale = this.getMapScale();
         const gridSize = this.state.gridSize * scale;
         const brushRadius = this.state.fogBrushSize * gridSize / 2;
 
@@ -803,9 +848,8 @@ const Battlemap = {
             }
         }
 
-        // Determine token size from monster
-        const sizeMap = { Tiny: 0.5, Small: 1, Medium: 1, Large: 2, Huge: 3, Gargantuan: 4 };
-        const size = monster ? (sizeMap[monster.size] || 1) : 1;
+        // Determine token size from monster using centralized size map
+        const size = monster ? (TokenFactory.SIZE_MAP[monster.size] || 1) : 1;
 
         // Generate color based on name hash
         const color = this.getTokenColor(data.name);
@@ -907,30 +951,30 @@ const Battlemap = {
         reader.readAsDataURL(file);
     },
 
+    getMapScale() {
+        if (!this.state.backgroundImage) return 1;
+        // Guard against zero dimensions (canvas hidden or not rendered yet)
+        if (this.canvas.width === 0 || this.canvas.height === 0 ||
+            this.state.backgroundImage.width === 0 || this.state.backgroundImage.height === 0) {
+            return 1;
+        }
+        // Fit image into canvas while maintaining aspect ratio
+        return Math.min(
+            this.canvas.width / this.state.backgroundImage.width,
+            this.canvas.height / this.state.backgroundImage.height
+        );
+    },
+
     resizeCanvas() {
-        const container = this.canvas.parentElement;
-        const maxW = container.clientWidth - 20;
-        const maxH = container.clientHeight - 40;
+        // Set canvas rendering resolution to match display size (controlled by CSS)
+        // This prevents stretching when CSS width:100% is used
+        this.canvas.width = this.canvas.clientWidth;
+        this.canvas.height = this.canvas.clientHeight;
 
         const oldWidth = this.canvas.width;
         const oldHeight = this.canvas.height;
 
-        console.log('[resizeCanvas] Called. Old:', oldWidth, 'x', oldHeight, 'Container max:', maxW, 'x', maxH);
-
-        if (this.state.backgroundImage) {
-            const imgW = this.state.backgroundImage.width;
-            const imgH = this.state.backgroundImage.height;
-            const scale = Math.min(maxW / imgW, maxH / imgH, 1);
-            this.canvas.width = imgW * scale;
-            this.canvas.height = imgH * scale;
-            console.log('[resizeCanvas] Has image. Image:', imgW, 'x', imgH, 'Scale:', scale);
-        } else {
-            this.canvas.width = maxW;
-            this.canvas.height = maxH;
-            console.log('[resizeCanvas] No image, using container size');
-        }
-
-        console.log('[resizeCanvas] New:', this.canvas.width, 'x', this.canvas.height);
+        console.log('[resizeCanvas] Resized to:', this.canvas.width, 'x', this.canvas.height);
 
         // If dimensions changed significantly, reset pan/zoom to prevent corrupt state
         if (Math.abs(oldWidth - this.canvas.width) > 1 ||
@@ -962,20 +1006,24 @@ const Battlemap = {
 
         // Draw background
         if (this.state.backgroundImage) {
-            ctx.drawImage(this.state.backgroundImage, 0, 0, this.canvas.width, this.canvas.height);
+            const scale = this.getMapScale();
+            ctx.drawImage(this.state.backgroundImage, 0, 0, this.state.backgroundImage.width * scale, this.state.backgroundImage.height * scale);
         } else {
             ctx.fillStyle = '#3a3a3a';
             ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         }
 
         // Calculate grid scale
-        const scale = this.state.backgroundImage
-            ? this.canvas.width / this.state.backgroundImage.width
-            : 1;
+        const scale = this.getMapScale();
         const gridSize = this.state.gridSize * scale;
 
-        // Draw grid
-        if (this.state.showGrid) {
+        // Draw grid (only in combat mode, or if explicitly enabled)
+        // In explore mode, grid is hidden by default but can be manually shown
+        const showGridInThisMode = this.state.mode === 'combat'
+            ? this.state.showGrid
+            : this.state.showGrid;
+        // Only draw grid if gridSize is reasonable (prevents infinite loop if scale is 0)
+        if (showGridInThisMode && gridSize > 1) {
             ctx.strokeStyle = 'rgba(255,255,255,0.3)';
             ctx.lineWidth = 1 / this.state.zoom; // Keep grid lines consistent
 
@@ -1054,7 +1102,13 @@ const Battlemap = {
             ctx.fillText(token.name.substring(0, 3).toUpperCase(), x, y);
 
             // HP bar (if token has HP)
-            this.renderTokenHp(ctx, token, x, y, radius);
+            // In combat mode, always show HP bars
+            // In explore mode, only show HP bar on hovered tokens
+            const showHpBar = this.state.mode === 'combat' ||
+                token.id === this.state.hoveredTokenId;
+            if (showHpBar) {
+                this.renderTokenHp(ctx, token, x, y, radius);
+            }
         });
 
         // Draw roll popups above tokens
@@ -1077,9 +1131,7 @@ const Battlemap = {
         const canvasX = (e.clientX - rect.left - panPixelX) / this.state.zoom;
         const canvasY = (e.clientY - rect.top - panPixelY) / this.state.zoom;
 
-        const scale = this.state.backgroundImage
-            ? this.canvas.width / this.state.backgroundImage.width
-            : 1;
+        const scale = this.getMapScale();
         const gridSize = this.state.gridSize * scale;
 
         return {
@@ -1156,9 +1208,7 @@ const Battlemap = {
     },
 
     getAoeShapeAt(gridX, gridY) {
-        const scale = this.state.backgroundImage
-            ? this.canvas.width / this.state.backgroundImage.width
-            : 1;
+        const scale = this.getMapScale();
         const gridSize = this.state.gridSize * scale;
         const ftToGrids = 1 / 5; // 5ft per grid
 
@@ -1246,7 +1296,6 @@ const Battlemap = {
         this.syncPlayerView();
         this.renderTokenList();
         this.scheduleAutoSave();
-        this.updateSpawnCounts();
     },
 
     clearAllTokens() {
@@ -1256,7 +1305,6 @@ const Battlemap = {
         this.syncPlayerView();
         this.renderTokenList();
         this.scheduleAutoSave();
-        this.updateSpawnCounts();
     },
 
     renderTokenList() {
@@ -1503,34 +1551,29 @@ const Battlemap = {
             return;
         }
 
-        const party = State.getParty();
+        // Get party from worldManager (includes players, sidekicks, NPCs with location='party')
+        if (!window.worldManager.data) {
+            await window.worldManager.load();
+        }
+        const party = window.worldManager.getPartyMembers();
+
         if (!skipConfirm) {
             const confirmMsg = `This will add tokens for all monsters in "${encounter.name}" and ${party.length} party members. Continue?`;
             if (!confirm(confirmMsg)) return;
         }
 
-        // Add Party Members
-        const partyColor = '#3B5998'; // Blue
+        // Add Party Members (players, sidekicks, NPCs) using centralized colors
         party.forEach(p => {
-            this.addToken(p.name, partyColor, 1, null, p.id);
+            const color = TokenFactory.TYPE_COLORS[p.type] || TokenFactory.TYPE_COLORS.player;
+            this.addToken(p.name, color, 1, null, p.id);
         });
-
-        // Map Open5e sizes to grid sizes
-        const sizeMap = {
-            'Tiny': 1,
-            'Small': 1,
-            'Medium': 1,
-            'Large': 2,
-            'Huge': 3,
-            'Gargantuan': 4
-        };
 
         for (const m of encounter.monsters) {
             try {
                 // Try to get monster details for the size
                 const details = await API.getMonster(m.slug);
-                const size = details ? (sizeMap[details.size] || 1) : 1;
-                const color = '#C84B31'; // Default red for monsters
+                const size = details ? (TokenFactory.SIZE_MAP[details.size] || 1) : 1;
+                const color = TokenFactory.TYPE_COLORS.monster;
 
                 for (let i = 0; i < m.qty; i++) {
                     const name = m.qty > 1 ? `${m.name} ${i + 1}` : m.name;
@@ -1543,7 +1586,7 @@ const Battlemap = {
                 for (let i = 0; i < m.qty; i++) {
                     const name = m.qty > 1 ? `${m.name} ${i + 1}` : m.name;
                     const instanceId = State.generateId();
-                    this.addToken(name, '#C84B31', 1, m.slug, instanceId);
+                    this.addToken(name, TokenFactory.TYPE_COLORS.monster, 1, m.slug, instanceId);
                 }
             }
         }
@@ -1551,15 +1594,6 @@ const Battlemap = {
         this.render();
         this.renderTokenList();
         this.syncPlayerView();
-        this.updateSpawnCounts();
-    },
-
-    updateSpawnCounts() {
-        // No-op — placeholder for future encounter panel spawn count display
-    },
-
-    renderEncounterPanel() {
-        // No-op — placeholder for future encounter panel UI
     },
 
     // ============ Combat Integration API ============

@@ -12,6 +12,7 @@ const PORT = 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'state.json');
 const CUSTOM_MONSTERS_FILE = path.join(__dirname, 'data', 'custom-monsters.json');
 const CUSTOM_SPELLS_FILE = path.join(__dirname, 'data', 'custom-spells.json');
+const WORLD_FILE = path.join(__dirname, 'data', 'world.json');
 
 // Initialize Anthropic client
 const anthropic = new Anthropic();
@@ -89,6 +90,28 @@ app.get('/api/state', (req, res) => {
 app.put('/api/state', (req, res) => {
     writeState(req.body);
     res.json({ success: true });
+});
+
+// ============ World Data Persistence ============
+
+// GET world.json
+app.get('/data/world.json', (req, res) => {
+    if (fs.existsSync(WORLD_FILE)) {
+        res.sendFile(WORLD_FILE);
+    } else {
+        res.status(404).json({ error: 'world.json not found' });
+    }
+});
+
+// POST save world
+app.post('/save/world', (req, res) => {
+    try {
+        fs.writeFileSync(WORLD_FILE, JSON.stringify(req.body, null, 2));
+        res.json({ status: 'ok' });
+    } catch (err) {
+        console.error('Failed to save world.json:', err);
+        res.status(500).json({ error: 'Failed to save world.json' });
+    }
 });
 
 // ============ Open5e Proxy ============
@@ -559,6 +582,39 @@ app.delete('/api/maps/:id', (req, res) => {
     writeMaps(maps);
 
     res.json({ success: true });
+});
+
+// ============ Portrait Uploads ============
+
+const PORTRAITS_DIR = path.join(__dirname, 'data', 'portraits');
+
+// Ensure portraits directory exists
+if (!fs.existsSync(PORTRAITS_DIR)) {
+    fs.mkdirSync(PORTRAITS_DIR, { recursive: true });
+}
+
+// POST upload portrait
+app.post('/upload/portrait', upload.single('portrait'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    try {
+        const id = crypto.randomBytes(8).toString('hex');
+        const filename = `${id}.webp`;
+        const imagePath = path.join(PORTRAITS_DIR, filename);
+
+        // Process and optimize portrait with Sharp
+        await sharp(req.file.buffer)
+            .resize(256, 256, { fit: 'cover' })
+            .webp({ quality: 80 })
+            .toFile(imagePath);
+
+        res.json({ path: `/data/portraits/${filename}` });
+    } catch (error) {
+        console.error('Portrait upload failed:', error);
+        res.status(500).json({ error: 'Failed to process portrait' });
+    }
 });
 
 // ============ Battlemap State Persistence ============

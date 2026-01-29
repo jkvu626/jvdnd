@@ -1,0 +1,189 @@
+{
+  "viewport": {
+    "x": 0,
+    "y": 0,
+    "zoom": 1
+  },
+  "party": {
+    "locationId": "loc_1769611550976",
+    "position": {
+      "x": 627.148336763866,
+      "y": 333.0190188347347
+    },
+    "state": "idle"
+  },
+  "locations": [
+    {
+      "id": "loc_1769611366255",
+      "name": "Village of Barovia",
+      "type": "town",
+      "x": 1232.3335780728303,
+      "y": 618.170938636751,
+      "linkedMapId": null,
+      "description": "The village of Barovia is a bleak, fog-choked settlement where crumbling homes huddle beneath the looming shadow of Castle Ravenloft. Its people move with hollow eyes and whispered dread, living under the constant, oppressive presence of Strahd von Zarovich."
+    },
+    {
+      "id": "loc_1769611459322",
+      "name": "Vistani Camp",
+      "type": "town",
+      "x": 1081.2914445446202,
+      "y": 613.6138622653485,
+      "linkedMapId": null,
+      "description": "The Vistani camp at Tser Pool is a lively pocket of warmth and color, where crackling fires, music, and laughter stand in sharp contrast to Barovia’s gloom. Beneath the revelry, the Vistani trade in secrets and fate, with Madam Eva’s tarokka readings guiding the course of destiny."
+    },
+    {
+      "id": "loc_1769611513795",
+      "name": "Old Windmill",
+      "type": "point",
+      "x": 770.498762762236,
+      "y": 411.6626553199515,
+      "linkedMapId": null,
+      "description": "The old, decrepit windmill creaks endlessly in the wind, its warped blades turning above rotting timbers and sagging stone. A sickly smell clings to the air, and the place radiates a quiet wrongness that warns travelers to keep their distance."
+    },
+    {
+      "id": "loc_1769611550976",
+      "name": "Vallaki",
+      "type": "city",
+      "x": 627.148336763866,
+      "y": 333.0190188347347,
+      "linkedMapId": "06a7100598d8c977",
+      "description": "Vallaki is a fortified town obsessed with forced cheer, where garish festivals and smiling masks attempt to hold back Barovia’s despair. Behind its walls, fear and cruelty simmer just beneath the surface as the illusion of safety slowly cracks."
+    },
+    {
+      "id": "loc_1769631085999",
+      "name": "Castle Ravenloft",
+      "type": "city",
+      "x": 1116.7386796123646,
+      "y": 509.789866429031,
+      "linkedMapId": null,
+      "description": "Castle Ravenloft is a towering gothic fortress perched atop a thousand-foot pillar of rock in the haunted valley of Barovia, serving as the lair of the vampire lord Strahd von Zarovich. Its crumbling spires, labyrinthine halls, and mist-shrouded battlements hide countless horrors, from undead servants to torture chambers, all under the eternal watch of its immortal master."
+    }
+  ],
+  "characters": [
+    {
+      "id": "pc_ian_parish",
+      "type": "player",
+      "name": "Ian Parish",
+      "stats": {
+        "hp": 27,
+        "maxHp": 27,
+        "ac": 14
+      },
+      "location": "party",
+      "portrait": "",
+      "class": "Druid",
+      "level": 4,
+      "race": "Dwarf"
+    },
+    {
+      "id": "pc_dan_mastrooaf",
+      "type": "player",
+      "name": "Dan MastroOaf",
+      "stats": {
+        "hp": 21,
+        "maxHp": 21,
+        "ac": 12
+      },
+      "location": "party",
+      "portrait": "",
+      "class": "Bard",
+      "level": 4,
+      "race": "Elf"
+    },
+    {
+      "id": "pc_james_blanch",
+      "type": "player",
+      "name": "James Blanch",
+      "stats": {
+        "hp": 24,
+        "maxHp": 24,
+        "ac": 13
+      },
+      "location": "party",
+      "portrait": "",
+      "class": "Monk",
+      "level": 4,
+      "race": "Gnome"
+    },
+    {
+      "id": "pc_matt_stone",
+      "type": "player",
+      "name": "Matt Stone",
+      "stats": {
+        "hp": 21,
+        "maxHp": 21,
+        "ac": 13
+      },
+      "location": "party",
+      "portrait": "",
+      "class": "Warlock",
+      "level": 4,
+      "race": "Half-Elf",
+      "inventory": []
+    },
+    {
+      "id": "char_1769610869894",
+      "type": "npc",
+      "name": "Strahd",
+      "stats": {
+        "hp": 200,
+        "maxHp": 200,
+        "ac": 200
+      },
+      "location": "loc_1769610017983",
+      "portrait": ""
+    },
+    {
+      "id": "char_1769643713714",
+      "type": "sidekick",
+      "name": "Ireena Kolyana",
+      "portrait": "",
+      "location": "party",
+      "stats": {
+        "hp": 24,
+        "maxHp": 24,
+        "ac": 15
+      },
+      "abilities": {
+        "str": 11,
+        "dex": 14,
+        "con": 11,
+        "int": 12,
+        "wis": 14,
+        "cha": 16
+      },
+      "class": null,
+      "level": null,
+      "race": null,
+      "inventory": [],
+      "notes": "",
+      "story": null,
+      "statblockSlug": null,
+      "sidekick": {
+        "baseCreature": "Noble",
+        "class": "Expert",
+        "level": 4,
+        "abilities": {
+          "str": 11,
+          "dex": 14,
+          "con": 11,
+          "int": 12,
+          "wis": 14,
+          "cha": 16
+        },
+        "chosenSave": "Dexterity",
+        "chosenSkills": [
+          "Stealth",
+          "Perception",
+          "Investigation",
+          "History",
+          "Medicine"
+        ],
+        "expertiseSkills": [
+          "Perception",
+          "Investigation"
+        ]
+      }
+    }
+  ]
+}

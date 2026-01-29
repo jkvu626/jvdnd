@@ -7,11 +7,13 @@ const UI = {
 
     init() {
         this.elements = {
+            btnWorldMode: document.getElementById('btn-world-mode'),
             btnPrepMode: document.getElementById('btn-prep-mode'),
             btnPartyMode: document.getElementById('btn-party-mode'),
             btnMapMode: document.getElementById('btn-map-mode'),
             btnBestiaryMode: document.getElementById('btn-bestiary-mode'),
             btnSpellbookMode: document.getElementById('btn-spellbook-mode'),
+            worldMode: document.getElementById('world-mode'),
             prepMode: document.getElementById('prep-mode'),
             partyMode: document.getElementById('party-mode'),
             mapMode: document.getElementById('map-mode'),
@@ -32,6 +34,8 @@ const UI = {
 
             btnRunEncounter: document.getElementById('btn-run-encounter'),
             btnDeleteEncounter: document.getElementById('btn-delete-encounter'),
+            linkedMapDisplay: document.getElementById('linked-map-display'),
+            btnLinkMap: document.getElementById('btn-link-map'),
             noActiveEncounter: document.getElementById('no-active-encounter'),
             combatView: document.getElementById('combat-view'),
             initiativeList: document.getElementById('initiative-list'),
@@ -44,14 +48,19 @@ const UI = {
             diceInput: document.getElementById('dice-input'),
             btnRollDice: document.getElementById('btn-roll-dice'),
             diceResults: document.getElementById('dice-results'),
-            pcName: document.getElementById('pc-name'),
-            pcAc: document.getElementById('pc-ac'),
-            pcHp: document.getElementById('pc-hp'),
-            btnAddPc: document.getElementById('btn-add-pc'),
-            partyList: document.getElementById('party-list'),
+            pcName: document.getElementById('char-name'),
+            pcAc: document.getElementById('char-ac'),
+            pcHp: document.getElementById('char-hp'),
+            btnAddPc: document.getElementById('btn-add-character'),
+            partyList: document.getElementById('characters-list'),
+            charSearch: document.getElementById('char-search'),
+            charType: document.getElementById('char-type'),
+            characterDetail: document.getElementById('character-detail'),
             initiativeModal: document.getElementById('initiative-modal'),
             initiativeInputs: document.getElementById('initiative-inputs'),
             btnStartCombat: document.getElementById('btn-start-combat'),
+            charBaseCreature: document.getElementById('char-base-creature'),
+            sidekickCreatureResults: document.getElementById('sidekick-creature-results'),
             // Import modal elements
             btnImportMonster: document.getElementById('btn-import-monster'),
             importModal: document.getElementById('import-modal'),
@@ -65,8 +74,10 @@ const UI = {
         };
     },
 
+
+
     showMode(mode) {
-        ['prep', 'party', 'map', 'bestiary', 'spellbook'].forEach(m => {
+        ['world', 'prep', 'party', 'map', 'bestiary', 'spellbook'].forEach(m => {
             const view = this.elements[`${m}Mode`];
             const btn = this.elements[`btn${m.charAt(0).toUpperCase() + m.slice(1)}Mode`];
             if (m === mode) {
@@ -81,9 +92,24 @@ const UI = {
         });
     },
 
+    /**
+     * Set the sidebar context visibility based on current mode
+     * @param {string} context - 'world', 'explore', or 'combat'
+     */
+    setSidebarContext(context) {
+        document.querySelectorAll('.sidebar-section[data-context]').forEach(el => {
+            if (el.dataset.context === context) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        });
+    },
+
     renderEncountersList(encounters, currentId) {
         this.elements.encountersList.innerHTML = encounters.map(e => `
             <li class="encounter-item ${e.id === currentId ? 'selected' : ''}" data-id="${e.id}">
+                ${e.linkedMapId ? '<span class="map-icon" title="Has linked map">&#x1F5FA;</span>' : ''}
                 ${e.scene ? '<span class="map-icon" title="Has saved scene">&#x1F3AD;</span>' : ''}
                 <div class="name">${this.escapeHtml(e.name)}</div>
                 <div class="monster-count">${e.monsters.length} monster type(s)</div>
@@ -96,6 +122,35 @@ const UI = {
         this.elements.encounterForm.classList.remove('hidden');
         this.elements.encounterName.value = encounter.name;
         this.renderEncounterMonsters(encounter.monsters);
+        this.renderLinkedMap(encounter.linkedMapId);
+    },
+
+    async renderLinkedMap(mapId) {
+        const display = this.elements.linkedMapDisplay;
+        if (!display) return;
+
+        if (!mapId) {
+            display.innerHTML = '<span class="no-map-linked">No map linked</span>';
+            return;
+        }
+
+        try {
+            const maps = await API.getMaps();
+            const map = maps.find(m => m.id === mapId);
+            if (map) {
+                display.innerHTML = `
+                    <div class="map-preview">
+                        <img src="${map.thumbnail}" alt="${this.escapeHtml(map.name)}">
+                        <span class="map-name">${this.escapeHtml(map.name)}</span>
+                        <button class="btn-unlink" title="Unlink map">&times;</button>
+                    </div>
+                `;
+            } else {
+                display.innerHTML = '<span class="no-map-linked">Linked map not found</span>';
+            }
+        } catch {
+            display.innerHTML = '<span class="no-map-linked">No map linked</span>';
+        }
     },
 
     hideEncounterForm() {

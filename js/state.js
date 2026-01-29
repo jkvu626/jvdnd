@@ -130,6 +130,22 @@ const State = {
         this.save();
     },
 
+    linkMapToEncounter(encounterId, mapId) {
+        const encounter = this.getEncounter(encounterId);
+        if (!encounter) return false;
+        encounter.linkedMapId = mapId;
+        this.save();
+        return true;
+    },
+
+    unlinkMapFromEncounter(encounterId) {
+        const encounter = this.getEncounter(encounterId);
+        if (!encounter) return false;
+        delete encounter.linkedMapId;
+        this.save();
+        return true;
+    },
+
     addMonsterToEncounter(encounterId, monster) {
         const encounter = this.getEncounter(encounterId);
         if (!encounter) return;
@@ -288,13 +304,19 @@ const State = {
     },
 
     endCombat() {
-        // Sync player HP back to party state before clearing combat
-        if (this.state.activeEncounter) {
+        // Sync HP back to worldManager for all persistent characters (players, sidekicks, NPCs)
+        if (this.state.activeEncounter && window.worldManager) {
             this.state.activeEncounter.combatants.forEach(c => {
-                if (c.isPlayer) {
-                    const member = this.state.party.find(p => p.id === c.id);
-                    if (member) {
-                        member.hp = c.hp;
+                // Sync any character that has a type (party members from worldManager)
+                if (c.characterType || c.isPlayer || c.isSidekick || c.isNpc) {
+                    const character = window.worldManager.getCharacter(c.id);
+                    if (character && character.stats) {
+                        window.worldManager.updateCharacter(c.id, {
+                            stats: {
+                                ...character.stats,
+                                hp: c.hp
+                            }
+                        });
                     }
                 }
             });

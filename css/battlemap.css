@@ -250,6 +250,42 @@
     border-radius: var(--radius);
 }
 
+/* Mode Toggle Section */
+.mode-toggle-section {
+    margin-bottom: 0.5rem;
+}
+
+.toggle-switch {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+}
+
+.btn-mode {
+    flex: 1;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-mode:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+}
+
+.btn-mode.active {
+    background: #d4a017;
+    color: #1a1a1a;
+    border-color: #d4a017;
+    font-weight: 600;
+}
+
 .map-controls button {
     margin-top: 0.5rem;
 }
@@ -383,7 +419,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 1rem;
+    padding: 0 1rem 1rem;
     background: var(--bg-primary);
     overflow: hidden;
     min-width: 0;
@@ -394,6 +430,10 @@
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     cursor: crosshair;
+    max-height: 100vh;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
 }
 
 .map-hint {
@@ -547,4 +587,18 @@
     flex: 1;
     max-width: 400px;
     margin: 0;
+}
+
+/* ============ Explore Mode UI Adjustments ============ */
+
+#map-mode.explore-mode .cc-left-sidebar {
+    display: none;
+}
+
+#map-mode.explore-mode .cc-left-sidebar-toggle {
+    display: none;
+}
+
+#map-mode.explore-mode .statblock-section {
+    display: none;
 }

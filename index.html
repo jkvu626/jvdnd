@@ -10,6 +10,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/battlemap.css">
+    <link rel="stylesheet" href="css/world.css">
 </head>
 
 <body>
@@ -27,20 +28,42 @@
                 <button id="btn-next-turn-indicator" class="btn-indicator" title="Next Turn">▶</button>
             </div>
             <nav class="mode-toggle">
+                <button id="btn-world-mode" class="mode-btn">World</button>
                 <button id="btn-prep-mode" class="mode-btn active">Prep</button>
                 <button id="btn-map-mode" class="mode-btn">Map</button>
-                <button id="btn-party-mode" class="mode-btn">Party</button>
+                <button id="btn-party-mode" class="mode-btn">Characters</button>
                 <button id="btn-bestiary-mode" class="mode-btn">Bestiary</button>
                 <button id="btn-spellbook-mode" class="mode-btn">Spellbook</button>
             </nav>
         </header>
+
+        <!-- World Mode -->
+        <main id="world-mode" class="mode-view hidden">
+            <div id="world-map-viewport">
+                <div id="world-map-container">
+                    <img id="world-map-image" src="assets/world_map.jpg" alt="World Map">
+                    <div id="world-pins-layer"></div>
+                </div>
+            </div>
+
+
+
+            <!-- DM Tools -->
+            <div class="world-dm-toolbar">
+                <button id="btn-add-pin" title="Add Location">+</button>
+                <button id="btn-edit-pin" title="Edit Location">✎</button>
+                <button id="btn-delete-pin" title="Delete Location">×</button>
+            </div>
+
+            <!-- Sidebar for Location Details -->
+            <div id="world-sidebar" class="hidden"></div>
+        </main>
 
         <!-- Prep Mode -->
         <main id="prep-mode" class="mode-view active">
             <aside class="encounters-sidebar">
                 <h2>Encounters</h2>
                 <button id="btn-new-encounter" class="btn-primary">+ New Encounter</button>
-                <button id="btn-import-monster" class="btn-secondary">📥 Import Monster</button>
                 <ul id="encounters-list" class="encounters-list"></ul>
             </aside>
             <section class="encounter-editor">
@@ -60,6 +83,14 @@
                         <div id="encounter-monsters" class="combatants-list"></div>
                     </div>
 
+                    <div class="linked-map-section">
+                        <h3>Linked Map</h3>
+                        <div id="linked-map-display" class="linked-map-display">
+                            <span class="no-map-linked">No map linked</span>
+                        </div>
+                        <button id="btn-link-map" class="btn-secondary">Link Map</button>
+                    </div>
+
                     <div class="encounter-actions">
                         <button id="btn-save-encounter" class="btn-primary">Save</button>
                         <button id="btn-run-encounter" class="btn-secondary">Run Encounter</button>
@@ -71,19 +102,77 @@
 
         <!-- Party Mode -->
         <main id="party-mode" class="mode-view hidden">
-            <section class="party-editor">
-                <h2>Your Party</h2>
-                <p class="helper-text">These characters are automatically added to every encounter.</p>
+            <div class="characters-layout">
+                <!-- Left Sidebar: Add Character -->
+                <aside class="characters-sidebar-left">
+                    <div class="add-character-widget">
+                        <h3>Add Character</h3>
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="char-name" placeholder="Character name">
+                        </div>
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select id="char-type">
+                                <option value="player">Player</option>
+                                <option value="sidekick">Sidekick</option>
+                                <option value="npc">NPC</option>
+                            </select>
+                        </div>
+                        <!-- Dynamic fields based on type -->
+                        <div id="char-fields-player" class="char-type-fields">
+                            <input type="text" id="char-class" placeholder="Class (e.g., Fighter 5)">
+                            <input type="number" id="char-level" placeholder="Level" min="1">
+                            <input type="text" id="char-race" placeholder="Race">
+                        </div>
+                        <div id="char-fields-sidekick" class="char-type-fields hidden">
+                            <div class="input-with-dropdown">
+                                <input type="text" id="char-base-creature"
+                                    placeholder="Base Creature (e.g., Noble or search...)" autocomplete="off">
+                                <div id="sidekick-creature-results" class="search-results hidden"></div>
+                            </div>
+                            <select id="char-sidekick-class">
+                                <option value="Expert">Expert</option>
+                                <option value="Warrior">Warrior</option>
+                                <option value="Spellcaster">Spellcaster</option>
+                            </select>
+                            <input type="number" id="char-sidekick-level" placeholder="Level" min="1">
+                        </div>
+                        <div id="char-fields-npc" class="char-type-fields hidden">
+                            <input type="text" id="char-statblock-slug" placeholder="Statblock slug (optional)">
+                        </div>
+                        <div class="form-row">
+                            <input type="number" id="char-ac" placeholder="AC" min="1">
+                            <input type="number" id="char-hp" placeholder="HP" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <select id="char-location">
+                                <option value="party">Party</option>
+                            </select>
+                        </div>
+                        <button id="btn-add-character" class="btn-primary">+ Add Character</button>
+                    </div>
+                </aside>
 
-                <div class="add-party-member">
-                    <input type="text" id="pc-name" placeholder="Character name">
-                    <input type="number" id="pc-ac" placeholder="AC" min="1" max="30">
-                    <input type="number" id="pc-hp" placeholder="Max HP" min="1">
-                    <button id="btn-add-pc" class="btn-primary">Add</button>
-                </div>
+                <!-- Center: Character List -->
+                <main class="characters-list-container">
+                    <div class="characters-search">
+                        <input type="text" id="char-search" placeholder="Search characters...">
+                        <span id="char-search-count" class="search-count"></span>
+                    </div>
+                    <div id="characters-list" class="characters-list">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </main>
 
-                <div id="party-list" class="party-list"></div>
-            </section>
+                <!-- Right Sidebar: Detail Panel -->
+                <aside class="characters-sidebar-right">
+                    <div id="character-detail" class="character-detail-panel">
+                        <p class="empty-state">Select a character to view details</p>
+                    </div>
+                </aside>
+            </div>
         </main>
 
         <!-- Bestiary Mode -->
@@ -94,6 +183,8 @@
                     <input type="text" id="bestiary-search-input" placeholder="Search for a monster...">
                     <div id="bestiary-search-results" class="bestiary-results"></div>
                 </div>
+
+                <button id="btn-import-monster" class="btn-secondary">📥 Import Monster</button>
 
                 <div class="custom-monsters-section">
                     <h2>Custom Monsters</h2>
@@ -211,7 +302,6 @@
 
                 <!-- Tab: Map Tools -->
                 <div class="cc-tab-content active" id="tab-map-tools">
-
                     <div class="map-controls">
                         <h3>Tools</h3>
                         <div class="tool-row">
@@ -306,6 +396,12 @@
 
             <!-- Center: Canvas -->
             <section class="map-canvas-container">
+                <div id="mode-toggle" class="toggle-switch">
+                    <button id="btn-explore" class="btn-mode" title="Explore Mode - Free movement, HP hidden">🔭
+                        Explore</button>
+                    <button id="btn-combat" class="btn-mode active" title="Combat Mode - Grid, HP bars, turn order">⚔️
+                        Combat</button>
+                </div>
                 <canvas id="battlemap-canvas"></canvas>
                 <p class="map-hint">Click to place tokens • Right-click to remove • Drag to move</p>
 
@@ -481,12 +577,30 @@ HP 7 (2d6)
                 </div>
             </div>
         </div>
+        <!-- Sidekick Level-Up Modal -->
+        <div id="sidekick-levelup-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>⬆️ Level Up / Configure</h2>
+                <div id="levelup-content">
+                    <!-- Dynamic content -->
+                </div>
+                <div class="modal-actions">
+                    <button id="btn-confirm-levelup" class="btn-primary">Confirm</button>
+                    <button id="btn-cancel-levelup" class="btn-secondary"
+                        onclick="document.getElementById('sidekick-levelup-modal').classList.add('hidden')">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="js/dice.js"></script>
     <script src="js/api.js"></script>
     <script src="js/state.js"></script>
+    <script src="js/worldState.js"></script>
+    <script src="js/worldMap.js"></script>
+    <script src="js/migrate.js"></script>
     <script src="js/ui.js"></script>
+    <script src="js/tokenFactory.js"></script>
     <script src="js/battlemap.js"></script>
     <script src="js/spellbook.js"></script>
     <script src="js/app.js"></script>
