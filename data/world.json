@@ -5,10 +5,10 @@
     "zoom": 1
   },
   "party": {
-    "locationId": "loc_1769611459322",
+    "locationId": null,
     "position": {
-      "x": 1081.2914445446202,
-      "y": 613.6138622653485
+      "x": 832,
+      "y": 335.4000015258789
     },
     "state": "idle"
   },
@@ -65,12 +65,12 @@
       "type": "player",
       "name": "Ian Parish",
       "stats": {
-        "hp": 27,
+        "hp": 17,
         "maxHp": 27,
         "ac": 14
       },
       "location": "party",
-      "portrait": "",
+      "portrait": "/data/portraits/ddf0cb221f997cbd.webp",
       "class": "Druid",
       "level": 4,
       "race": "Dwarf"
@@ -85,7 +85,7 @@
         "ac": 12
       },
       "location": "party",
-      "portrait": "",
+      "portrait": "/data/portraits/d75c33df0155cdf1.webp",
       "class": "Bard",
       "level": 4,
       "race": "Elf"
@@ -100,7 +100,7 @@
         "ac": 13
       },
       "location": "party",
-      "portrait": "",
+      "portrait": "/data/portraits/fdaecead39cf8d24.webp",
       "class": "Monk",
       "level": 4,
       "race": "Gnome"
@@ -115,7 +115,7 @@
         "ac": 13
       },
       "location": "party",
-      "portrait": "",
+      "portrait": "/data/portraits/612c9ddc88e28396.webp",
       "class": "Warlock",
       "level": 4,
       "race": "Half-Elf",
@@ -137,7 +137,7 @@
       "id": "char_1769643713714",
       "type": "sidekick",
       "name": "Ireena Kolyana",
-      "portrait": "",
+      "portrait": "/data/portraits/b6535b549b88fe12.webp",
       "location": "party",
       "stats": {
         "hp": 24,

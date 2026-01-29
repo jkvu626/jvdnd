@@ -113,10 +113,10 @@
     "encounterId": "mkw4re3u5qqq2vnck3x",
     "combatants": [
       {
-        "id": "mkyn2s32zcn71ssf1wq",
+        "id": "mkzhfaw8j38inpamsgp",
         "name": "Wolf 2",
         "slug": "wolf",
-        "initiative": 21,
+        "initiative": 22,
         "ac": 13,
         "hp": 11,
         "maxHp": 11,
@@ -124,18 +124,29 @@
         "hasToken": true
       },
       {
-        "id": "mkyn2s32zqsghdcfabl",
-        "name": "Wolf 3",
-        "slug": "wolf",
-        "initiative": 19,
-        "ac": 13,
-        "hp": 11,
-        "maxHp": 11,
+        "id": "mkzhfaw5hehpac35yxv",
+        "name": "Werewolf 1",
+        "slug": "werewolf",
+        "initiative": 20,
+        "ac": 12,
+        "hp": 84,
+        "maxHp": 84,
         "isPlayer": false,
         "hasToken": true
       },
       {
-        "id": "mkyn2s32kd6bvu3eupp",
+        "id": "mkzhfaw59u2efhpe2of",
+        "name": "Werewolf 2",
+        "slug": "werewolf",
+        "initiative": 20,
+        "ac": 12,
+        "hp": 84,
+        "maxHp": 84,
+        "isPlayer": false,
+        "hasToken": true
+      },
+      {
+        "id": "mkzhfb4ct1x6qyzzloc",
         "name": "Swarm of Ravens 2",
         "slug": "swarm-of-ravens",
         "initiative": 19,
@@ -146,24 +157,13 @@
         "hasToken": true
       },
       {
-        "id": "mkyn2s319t2hc4j784",
-        "name": "Wolf 1",
+        "id": "mkzhfaw9copn0k7euwg",
+        "name": "Wolf 3",
         "slug": "wolf",
-        "initiative": 12,
+        "initiative": 18,
         "ac": 13,
         "hp": 11,
         "maxHp": 11,
-        "isPlayer": false,
-        "hasToken": true
-      },
-      {
-        "id": "mkyn2s31o39kwhqta2l",
-        "name": "Werewolf 1",
-        "slug": "werewolf",
-        "initiative": 11,
-        "ac": 12,
-        "hp": 84,
-        "maxHp": 84,
         "isPlayer": false,
         "hasToken": true
       },
@@ -173,7 +173,7 @@
         "slug": null,
         "initiative": 10,
         "ac": 14,
-        "hp": 27,
+        "hp": 17,
         "maxHp": 27,
         "isPlayer": true,
         "isSidekick": false,
@@ -224,7 +224,7 @@
         "characterType": "player"
       },
       {
-        "id": "char_1769621973694",
+        "id": "char_1769643713714",
         "name": "Ireena Kolyana",
         "slug": null,
         "initiative": 10,
@@ -238,10 +238,10 @@
         "characterType": "sidekick"
       },
       {
-        "id": "mkyn2s32g0yyvz6vrqo",
+        "id": "mkzhfb4cnhs5gunmthm",
         "name": "Swarm of Ravens 1",
         "slug": "swarm-of-ravens",
-        "initiative": 7,
+        "initiative": 9,
         "ac": 12,
         "hp": 24,
         "maxHp": 24,
@@ -249,13 +249,13 @@
         "hasToken": true
       },
       {
-        "id": "mkyn2s31qgc6lxeqbv",
-        "name": "Werewolf 2",
-        "slug": "werewolf",
-        "initiative": 5,
-        "ac": 12,
-        "hp": 84,
-        "maxHp": 84,
+        "id": "mkzhfaw8akygcs42ass",
+        "name": "Wolf 1",
+        "slug": "wolf",
+        "initiative": 7,
+        "ac": 13,
+        "hp": 11,
+        "maxHp": 11,
         "isPlayer": false,
         "hasToken": true
       }

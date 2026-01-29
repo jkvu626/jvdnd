@@ -1240,8 +1240,8 @@ const App = {
                 ${weapons.length === 0 ? '<p class="empty-hint">No weapons equipped</p>' : ''}
                 <div class="weapons-list">
                     ${weapons.map((w, idx) => {
-                        const isVersatile = w.properties.some(p => p.startsWith('Versatile'));
-                        return `
+            const isVersatile = w.properties.some(p => p.startsWith('Versatile'));
+            return `
                             <div class="weapon-item" data-idx="${idx}">
                                 <div class="weapon-info">
                                     <span class="weapon-name">${w.name}</span>
@@ -1258,7 +1258,7 @@ const App = {
                                 </div>
                             </div>
                         `;
-                    }).join('')}
+        }).join('')}
                 </div>
             </div>
         `;
@@ -1280,16 +1280,16 @@ const App = {
                 </h4>
                 <div class="ability-scores-grid">
                     ${Object.entries(abilities).map(([key, val]) => {
-                        const mod = Math.floor((val - 10) / 2);
-                        const modStr = mod >= 0 ? `+${mod}` : mod;
-                        return `
+            const mod = Math.floor((val - 10) / 2);
+            const modStr = mod >= 0 ? `+${mod}` : mod;
+            return `
                             <div class="ability-score-box">
                                 <div class="ability-label">${key.toUpperCase()}</div>
                                 <div class="ability-mod">${modStr}</div>
                                 <div class="ability-val">${val}</div>
                             </div>
                         `;
-                    }).join('')}
+        }).join('')}
                 </div>
             </div>
         `;
@@ -1435,25 +1435,25 @@ const App = {
                         </button>
                     ` : ''}
                     ${(c.sidekick.chosenSkills || []).filter(s => !(c.sidekick.expertiseSkills || []).includes(s)).slice(0, 5).map(skill => {
-                        const stat = skillMap[skill] || 'dex';
-                        const mod = getMod(stat);
-                        return `
+            const stat = skillMap[skill] || 'dex';
+            const mod = getMod(stat);
+            return `
                             <button class="quick-roll-btn" data-roll="1d20${formatRoll(mod, true)}" data-label="${skill}">
                                 ${skill.substring(0, 4)} ${formatRoll(mod, true)}
                             </button>
                         `;
-                    }).join('')}
+        }).join('')}
                     ${(c.sidekick.expertiseSkills || []).map(skill => {
-                        const stat = skillMap[skill] || 'dex';
-                        const mod = getMod(stat);
-                        const bonus = mod + (profBonus * 2);
-                        const sign = bonus >= 0 ? '+' : '';
-                        return `
+            const stat = skillMap[skill] || 'dex';
+            const mod = getMod(stat);
+            const bonus = mod + (profBonus * 2);
+            const sign = bonus >= 0 ? '+' : '';
+            return `
                             <button class="quick-roll-btn" data-roll="1d20${sign}${bonus}" data-label="${skill} (Expertise)">
                                 ${skill.substring(0, 4)} ${sign}${bonus}
                             </button>
                         `;
-                    }).join('')}
+        }).join('')}
                 </div>
                 ${hasWeapons ? `
                     <h5>Weapons</h5>
@@ -1476,8 +1476,8 @@ const App = {
 
 
 
-    _bindDetailEvents(characterId) {
-        const panel = document.getElementById('character-detail');
+    _bindDetailEvents(characterId, rootElement = null) {
+        const panel = rootElement || document.getElementById('character-detail');
         if (!panel) return;
 
         // Auto-save on input change
@@ -1544,14 +1544,9 @@ const App = {
 
         panel.querySelectorAll('.quick-roll-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                Dice.roll(btn.dataset.roll);
-                // Optionally log to dice tray
-                const resultsDiv = document.getElementById('dice-results');
-                if (resultsDiv) {
-                    const result = document.createElement('div');
-                    result.className = 'dice-result-entry';
-                    result.innerHTML = `<strong>${btn.dataset.label}:</strong> Rolled ${btn.dataset.roll}`;
-                    resultsDiv.prepend(result);
+                const result = Dice.roll(btn.dataset.roll);
+                if (result) {
+                    UI.addDiceResult(btn.dataset.roll, result);
                 }
             });
         });
@@ -1871,15 +1866,15 @@ const App = {
                 <p>Click a weapon to equip it:</p>
                 <div class="weapon-select-grid">
                     ${weaponNames.map(name => {
-                        const w = this.WEAPONS_DATA[name];
-                        return `
+                const w = this.WEAPONS_DATA[name];
+                return `
                             <div class="weapon-option" data-weapon="${name}">
                                 <div class="weapon-option-name">${name}</div>
                                 <div class="weapon-option-stats">${w.damage} ${w.type}</div>
                                 <div class="weapon-option-props">${w.properties.join(', ') || '—'}</div>
                             </div>
                         `;
-                    }).join('')}
+            }).join('')}
                 </div>
             `;
 
@@ -2204,6 +2199,32 @@ const App = {
                 token.hp = combatant.hp;
                 Battlemap.render();
                 Battlemap.syncPlayerView();
+            }
+        }
+
+        // Sync to persistent character data (if this is a PC/Sidekick/NPC)
+        // Check if combatant.id matches a known character
+        if (window.worldManager) {
+            const char = window.worldManager.getCharacter(combatant.id);
+            if (char) {
+                // Determine if we need to update
+                const currentHp = char.stats?.hp;
+                if (currentHp !== undefined && currentHp !== combatant.hp) {
+                    window.worldManager.updateCharacter(combatant.id, {
+                        stats: { ...char.stats, hp: combatant.hp }
+                    });
+
+                    // Specific fix: if this character is currently viewed in the detail panel, refresh it
+                    // This keeps the "HP" field in the profile card in sync live
+                    const detailPanel = document.getElementById('character-detail');
+                    const nameInput = detailPanel?.querySelector('.detail-name-input');
+                    // Simple heuristic: if the name matches (or we store ID somewhere)
+                    // Better: check if we have a way to know WHO is open. 
+                    // We don't have 'this.selectedCharacterId' exposed easily unless we check `UI.selectedCharacterId`
+                    if (this.selectedCharacterId === combatant.id) {
+                        this.showCharacterDetail(combatant.id);
+                    }
+                }
             }
         }
 
@@ -2876,6 +2897,27 @@ const App = {
         // When a token is clicked on the canvas, highlight the matching initiative item
         Battlemap.onTokenSelect = async (combatantId) => {
             if (!combatantId) return;
+
+            // 1. Check if it's a known character (Party/Sidekick/NPC)
+            const character = window.worldManager?.getCharacter(combatantId);
+            if (character) {
+                // Render into the Map Sidebar's statblock panel
+                const panel = document.getElementById('active-statblock');
+                if (panel) {
+                    panel.innerHTML = this._renderDetailPanel(character);
+                    this._bindDetailEvents(combatantId, panel);
+                    panel.classList.remove('hidden');
+                }
+
+                // Ensure sidebar is open
+                const sidebar = document.getElementById('cc-right-sidebar');
+                if (sidebar && sidebar.classList.contains('collapsed')) {
+                    this.toggleRightSidebar();
+                }
+                return;
+            }
+
+            // 2. Fallback to Combat/Monster logic
             const combat = State.getActiveCombat();
             if (!combat) return;
 
@@ -2901,6 +2943,12 @@ const App = {
                 if (monster) {
                     this.monsterCache.set(combatant.slug, monster);
                     UI.renderStatblock(monster);
+
+                    // Ensure sidebar is open
+                    const sidebar = document.getElementById('cc-right-sidebar');
+                    if (sidebar && sidebar.classList.contains('collapsed')) {
+                        this.toggleRightSidebar();
+                    }
                 }
             }
         };

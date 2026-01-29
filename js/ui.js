@@ -70,7 +70,9 @@ const UI = {
             btnSaveImport: document.getElementById('btn-save-import'),
             btnCancelImport: document.getElementById('btn-cancel-import'),
             // Custom monsters
-            customMonstersList: document.getElementById('custom-monsters-list')
+            customMonstersList: document.getElementById('custom-monsters-list'),
+            // Map Toast
+            mapToastContainer: document.getElementById('map-toast-container')
         };
     },
 
@@ -417,6 +419,9 @@ const UI = {
             </div>`;
         this.elements.diceResults.insertBefore(div, this.elements.diceResults.firstChild);
         while (this.elements.diceResults.children.length > 10) this.elements.diceResults.removeChild(this.elements.diceResults.lastChild);
+
+        // Show map toast
+        this.showMapToast(notation, result);
     },
 
     addDiceResultAdvantage(notation, result) {
@@ -450,6 +455,9 @@ const UI = {
         while (this.elements.diceResults.children.length > 10) {
             this.elements.diceResults.removeChild(this.elements.diceResults.lastChild);
         }
+
+        // Show map toast
+        this.showMapToast(notation, result);
     },
 
     escapeHtml(text) {
@@ -622,6 +630,53 @@ const UI = {
 
     clearCustomMonstersList() {
         this.elements.customMonstersList.innerHTML = '';
+    },
+
+    // ============ Map Toasts ============
+
+    showMapToast(notation, result) {
+        const container = this.elements.mapToastContainer;
+        if (!container) return; // Guard if element doesn't exist
+
+        // Clear existing toasts
+        container.innerHTML = '';
+
+        const div = document.createElement('div');
+        div.className = 'map-toast';
+
+        let totalClass = '';
+        if (result.isCrit) {
+            div.classList.add('crit');
+        } else if (result.isFumble) {
+            div.classList.add('fumble');
+        }
+
+        // Format content
+        let contentHtml = `
+            <span class="map-toast-notation">${notation}</span>
+            <span class="map-toast-result">${result.total}</span>
+        `;
+
+        if (result.advantage) {
+            const mode = result.advantage.mode === 'advantage' ? 'Adv' : 'Dis';
+            contentHtml += `<span class="map-toast-mode">(${mode})</span>`;
+        }
+
+        if (result.isCrit) contentHtml += ' 🎯';
+        if (result.isFumble) contentHtml += ' 💀';
+
+        div.innerHTML = contentHtml;
+        container.appendChild(div);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            div.style.animation = 'toast-out 0.3s forwards';
+            setTimeout(() => {
+                if (div.parentNode === container) {
+                    container.removeChild(div);
+                }
+            }, 300);
+        }, 3000);
     }
 };
 
