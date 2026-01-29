@@ -2821,3 +2821,145 @@ input[type="number"] {
     font-weight: bold;
     color: var(--success);
 }
+
+/* Sidekick Weapons */
+.sidekick-weapons h4 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidekick-weapons .empty-hint {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.85rem;
+    margin: 0.5rem 0;
+}
+
+.weapons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.weapon-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.5rem;
+}
+
+.weapon-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.weapon-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.weapon-damage {
+    font-size: 0.85rem;
+    color: var(--accent);
+}
+
+.weapon-props {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.weapon-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.btn-tiny {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.75rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    min-width: 24px;
+}
+
+.btn-tiny:hover {
+    background: var(--bg-hover);
+}
+
+.btn-toggle-grip {
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.btn-remove-weapon {
+    color: var(--danger);
+}
+
+/* Weapon Selection Modal */
+.weapon-select-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 0.5rem;
+}
+
+.weapon-option {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.weapon-option:hover {
+    border-color: var(--accent);
+    background: var(--bg-hover);
+}
+
+.weapon-option-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.weapon-option-stats {
+    font-size: 0.85rem;
+    color: var(--accent);
+}
+
+.weapon-option-props {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Quick Rolls Weapon Section */
+.quick-rolls h5 {
+    font-size: 0.85rem;
+    margin: 0.75rem 0 0.25rem 0;
+    color: var(--text-secondary);
+}
+
+.weapon-rolls {
+    flex-wrap: wrap;
+}
+
+.quick-roll-dmg {
+    background: var(--bg-hover);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.quick-roll-dmg:hover {
+    background: var(--danger);
+    color: white;
+}

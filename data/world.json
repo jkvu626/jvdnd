@@ -5,10 +5,10 @@
     "zoom": 1
   },
   "party": {
-    "locationId": "loc_1769611550976",
+    "locationId": "loc_1769611459322",
     "position": {
-      "x": 627.148336763866,
-      "y": 333.0190188347347
+      "x": 1081.2914445446202,
+      "y": 613.6138622653485
     },
     "state": "idle"
   },
@@ -182,6 +182,29 @@
         "expertiseSkills": [
           "Perception",
           "Investigation"
+        ],
+        "weapons": [
+          {
+            "name": "Rapier",
+            "damage": "1d8",
+            "type": "piercing",
+            "properties": [
+              "Finesse"
+            ],
+            "twoHanded": false
+          },
+          {
+            "name": "Heavy Crossbow",
+            "damage": "1d10",
+            "type": "piercing",
+            "properties": [
+              "Ammunition (100/400)",
+              "Heavy",
+              "Loading",
+              "Two-Handed"
+            ],
+            "twoHanded": false
+          }
         ]
       }
     }

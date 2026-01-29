@@ -988,6 +988,7 @@ const App = {
                 ${this._renderStatsSection(c)}
                 ${this._renderAbilityScores(c)}
                 ${this._renderSidekickProficiencies(c)}
+                ${this._renderSidekickWeapons(c)}
                 ${this._renderQuickRolls(c)}
                 ${this._renderSidekickFeatures(c)}
             `;
@@ -1102,6 +1103,51 @@ const App = {
         }
     },
 
+    // 5e SRD Weapons Database
+    WEAPONS_DATA: {
+        // Simple Melee
+        "Club": { damage: "1d4", type: "bludgeoning", properties: ["Light"] },
+        "Dagger": { damage: "1d4", type: "piercing", properties: ["Finesse", "Light", "Thrown (20/60)"] },
+        "Greatclub": { damage: "1d8", type: "bludgeoning", properties: ["Two-Handed"] },
+        "Handaxe": { damage: "1d6", type: "slashing", properties: ["Light", "Thrown (20/60)"] },
+        "Javelin": { damage: "1d6", type: "piercing", properties: ["Thrown (30/120)"] },
+        "Light Hammer": { damage: "1d4", type: "bludgeoning", properties: ["Light", "Thrown (20/60)"] },
+        "Mace": { damage: "1d6", type: "bludgeoning", properties: [] },
+        "Quarterstaff": { damage: "1d6", type: "bludgeoning", properties: ["Versatile (1d8)"] },
+        "Sickle": { damage: "1d4", type: "slashing", properties: ["Light"] },
+        "Spear": { damage: "1d6", type: "piercing", properties: ["Thrown (20/60)", "Versatile (1d8)"] },
+        // Simple Ranged
+        "Light Crossbow": { damage: "1d8", type: "piercing", properties: ["Ammunition (80/320)", "Loading", "Two-Handed"] },
+        "Dart": { damage: "1d4", type: "piercing", properties: ["Finesse", "Thrown (20/60)"] },
+        "Shortbow": { damage: "1d6", type: "piercing", properties: ["Ammunition (80/320)", "Two-Handed"] },
+        "Sling": { damage: "1d4", type: "bludgeoning", properties: ["Ammunition (30/120)"] },
+        // Martial Melee
+        "Battleaxe": { damage: "1d8", type: "slashing", properties: ["Versatile (1d10)"] },
+        "Flail": { damage: "1d8", type: "bludgeoning", properties: [] },
+        "Glaive": { damage: "1d10", type: "slashing", properties: ["Heavy", "Reach", "Two-Handed"] },
+        "Greataxe": { damage: "1d12", type: "slashing", properties: ["Heavy", "Two-Handed"] },
+        "Greatsword": { damage: "2d6", type: "slashing", properties: ["Heavy", "Two-Handed"] },
+        "Halberd": { damage: "1d10", type: "slashing", properties: ["Heavy", "Reach", "Two-Handed"] },
+        "Lance": { damage: "1d12", type: "piercing", properties: ["Reach", "Special"] },
+        "Longsword": { damage: "1d8", type: "slashing", properties: ["Versatile (1d10)"] },
+        "Maul": { damage: "2d6", type: "bludgeoning", properties: ["Heavy", "Two-Handed"] },
+        "Morningstar": { damage: "1d8", type: "piercing", properties: [] },
+        "Pike": { damage: "1d10", type: "piercing", properties: ["Heavy", "Reach", "Two-Handed"] },
+        "Rapier": { damage: "1d8", type: "piercing", properties: ["Finesse"] },
+        "Scimitar": { damage: "1d6", type: "slashing", properties: ["Finesse", "Light"] },
+        "Shortsword": { damage: "1d6", type: "piercing", properties: ["Finesse", "Light"] },
+        "Trident": { damage: "1d6", type: "piercing", properties: ["Thrown (20/60)", "Versatile (1d8)"] },
+        "War Pick": { damage: "1d8", type: "piercing", properties: [] },
+        "Warhammer": { damage: "1d8", type: "bludgeoning", properties: ["Versatile (1d10)"] },
+        "Whip": { damage: "1d4", type: "slashing", properties: ["Finesse", "Reach"] },
+        // Martial Ranged
+        "Blowgun": { damage: "1", type: "piercing", properties: ["Ammunition (25/100)", "Loading"] },
+        "Hand Crossbow": { damage: "1d6", type: "piercing", properties: ["Ammunition (30/120)", "Light", "Loading"] },
+        "Heavy Crossbow": { damage: "1d10", type: "piercing", properties: ["Ammunition (100/400)", "Heavy", "Loading", "Two-Handed"] },
+        "Longbow": { damage: "1d8", type: "piercing", properties: ["Ammunition (150/600)", "Heavy", "Two-Handed"] },
+        "Net": { damage: "0", type: "none", properties: ["Special", "Thrown (5/15)"] }
+    },
+
     // Sidekick features from Tasha's Cauldron of Everything
     SIDEKICK_FEATURES: {
         Expert: {
@@ -1175,13 +1221,47 @@ const App = {
         }
 
         return `
-    < div class="detail-section" >
+            <div class="detail-section">
                 <h4>${className} Features (Level ${level})</h4>
                 <ul class="feature-list">
                     ${features.map(f => `<li>${f}</li>`).join('')}
                 </ul>
-            </div >
-    `;
+            </div>
+        `;
+    },
+
+    _renderSidekickWeapons(c) {
+        if (!c.sidekick) return '';
+        const weapons = c.sidekick.weapons || [];
+
+        return `
+            <div class="detail-section sidekick-weapons">
+                <h4>Weapons <button class="btn-small btn-add-weapon">+ Add</button></h4>
+                ${weapons.length === 0 ? '<p class="empty-hint">No weapons equipped</p>' : ''}
+                <div class="weapons-list">
+                    ${weapons.map((w, idx) => {
+                        const isVersatile = w.properties.some(p => p.startsWith('Versatile'));
+                        return `
+                            <div class="weapon-item" data-idx="${idx}">
+                                <div class="weapon-info">
+                                    <span class="weapon-name">${w.name}</span>
+                                    <span class="weapon-damage">${w.damage} ${w.type}</span>
+                                    ${w.properties.length > 0 ? `<span class="weapon-props">${w.properties.join(', ')}</span>` : ''}
+                                </div>
+                                <div class="weapon-actions">
+                                    ${isVersatile ? `
+                                        <button class="btn-tiny btn-toggle-grip" data-idx="${idx}" title="Toggle 1H/2H">
+                                            ${w.twoHanded ? '2H' : '1H'}
+                                        </button>
+                                    ` : ''}
+                                    <button class="btn-tiny btn-remove-weapon" data-idx="${idx}" title="Remove">×</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
     },
 
     _renderAbilityScores(c) {
@@ -1194,25 +1274,25 @@ const App = {
         // Let's add a button that opens the ASI modal manually.
 
         return `
-    < div class="detail-section ability-scores-section" >
-                <h4>Ability Scores 
+            <div class="detail-section ability-scores-section">
+                <h4>Ability Scores
                     ${c.sidekick?.level >= 4 ? `<button class="btn-small btn-asi" style="float:right; margin-top:-5px;">Improve</button>` : ''}
                 </h4>
                 <div class="ability-scores-grid">
                     ${Object.entries(abilities).map(([key, val]) => {
-            const mod = Math.floor((val - 10) / 2);
-            const modStr = mod >= 0 ? `+${mod}` : mod;
-            return `
+                        const mod = Math.floor((val - 10) / 2);
+                        const modStr = mod >= 0 ? `+${mod}` : mod;
+                        return `
                             <div class="ability-score-box">
                                 <div class="ability-label">${key.toUpperCase()}</div>
                                 <div class="ability-mod">${modStr}</div>
                                 <div class="ability-val">${val}</div>
                             </div>
                         `;
-        }).join('')}
+                    }).join('')}
                 </div>
-            </div >
-    `;
+            </div>
+        `;
     },
 
     _renderSidekickProficiencies(c) {
@@ -1223,7 +1303,7 @@ const App = {
         const profBonus = Math.floor((c.sidekick.level - 1) / 4) + 2;
 
         return `
-    < div class="detail-section sidekick-proficiencies" >
+            <div class="detail-section sidekick-proficiencies">
                 <h4>Proficiencies <span class="prof-bonus">+${profBonus}</span></h4>
                 <div class="prof-row">
                     <span class="prof-label">Saving Throw</span>
@@ -1246,8 +1326,8 @@ const App = {
                     <span class="prof-value">${data.weapons.join(', ')}</span>
                 </div>
                 ${c.sidekick.class === 'Expert' ? this._renderExpertiseSection(c) : ''}
-            </div >
-    `;
+            </div>
+        `;
     },
 
     _renderExpertiseSection(c) {
@@ -1261,14 +1341,14 @@ const App = {
         const remaining = maxExpertise - expertise.length;
 
         return `
-    < div class="prof-row expertise-row" >
+            <div class="prof-row expertise-row">
                 <span class="prof-label">Expertise <span class="expertise-bonus">+${expertiseBonus}</span></span>
                 <span class="prof-value">
                     ${expertise.length > 0 ? expertise.join(', ') : ''}
                     ${remaining > 0 ? `<button class="btn-small btn-choose-expertise" data-max="${remaining}">Choose ${remaining}</button>` : ''}
                 </span>
-            </div >
-    `;
+            </div>
+        `;
     },
 
     _renderQuickRolls(c) {
@@ -1277,17 +1357,76 @@ const App = {
         const abilities = c.abilities || { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
         const getMod = (stat) => Math.floor((abilities[stat.toLowerCase().substring(0, 3)] - 10) / 2);
 
-        // Helper to formatting roll string
+        // Helper to format roll string
         const formatRoll = (mod, proficient) => {
             const total = mod + (proficient ? profBonus : 0);
-            return total >= 0 ? `+ ${total} ` : total;
+            return total >= 0 ? `+${total}` : `${total}`;
         };
 
-        const saveStat = c.sidekick.chosenSave ? c.sidekick.chosenSave.substring(0, 3).toLowerCase() : 'dex';
-        // Fallback default? Or just hide? logic below hides button if not chosen.
+        const formatDmgRoll = (mod) => {
+            return mod >= 0 ? `+${mod}` : `${mod}`;
+        };
+
+        // Get weapon ability modifier based on properties
+        const getWeaponAbilityMod = (weapon) => {
+            const props = weapon.properties || [];
+            const hasAmmo = props.some(p => p.startsWith('Ammunition'));
+            const hasFinesse = props.includes('Finesse');
+            const hasThrown = props.some(p => p.startsWith('Thrown'));
+
+            if (hasAmmo) {
+                return getMod('dex');
+            } else if (hasFinesse) {
+                return Math.max(getMod('str'), getMod('dex'));
+            } else if (hasThrown) {
+                return getMod('str');
+            }
+            return getMod('str'); // Default melee
+        };
+
+        // Get damage die for weapon (handles Versatile)
+        const getWeaponDamage = (weapon) => {
+            if (weapon.twoHanded) {
+                const versatileProp = weapon.properties.find(p => p.startsWith('Versatile'));
+                if (versatileProp) {
+                    const match = versatileProp.match(/\((\d+d\d+)\)/);
+                    if (match) return match[1];
+                }
+            }
+            return weapon.damage;
+        };
+
+        const weapons = c.sidekick.weapons || [];
+        const hasWeapons = weapons.length > 0;
+
+        // Render weapon attack/damage buttons
+        const weaponButtons = weapons.map(w => {
+            const abilityMod = getWeaponAbilityMod(w);
+            const atkBonus = formatRoll(abilityMod, true);
+            const dmgDie = getWeaponDamage(w);
+            const dmgBonus = formatDmgRoll(abilityMod);
+            const shortName = w.name.length > 8 ? w.name.substring(0, 7) + '.' : w.name;
+
+            return `
+                <button class="quick-roll-btn" data-roll="1d20${atkBonus}" data-label="${w.name} Attack">
+                    ${shortName} ${atkBonus}
+                </button>
+                <button class="quick-roll-btn quick-roll-dmg" data-roll="${dmgDie}${dmgBonus}" data-label="${w.name} Damage">
+                    ${dmgDie}${dmgBonus}
+                </button>
+            `;
+        }).join('');
+
+        // Skill mapping for skill checks
+        const skillMap = {
+            'Athletics': 'str', 'Acrobatics': 'dex', 'Sleight of Hand': 'dex', 'Stealth': 'dex',
+            'Arcana': 'int', 'History': 'int', 'Investigation': 'int', 'Nature': 'int', 'Religion': 'int',
+            'Animal Handling': 'wis', 'Insight': 'wis', 'Medicine': 'wis', 'Perception': 'wis', 'Survival': 'wis',
+            'Deception': 'cha', 'Intimidation': 'cha', 'Performance': 'cha', 'Persuasion': 'cha'
+        };
 
         return `
-    < div class="detail-section quick-rolls" >
+            <div class="detail-section quick-rolls">
                 <h4>Quick Rolls</h4>
                 <div class="dice-row">
                     ${c.sidekick.chosenSave ? `
@@ -1296,58 +1435,43 @@ const App = {
                         </button>
                     ` : ''}
                     ${(c.sidekick.chosenSkills || []).filter(s => !(c.sidekick.expertiseSkills || []).includes(s)).slice(0, 5).map(skill => {
-            // Mapping skill to stat is complex without a full lookup table.
-            // For simplicity, we might ask user or infer? 
-            // Tasha's sidekicks: usually standard 5e skills.
-            // Let's use a mini lookup for common ones or default to +PB if unknown
-            // Actually, common implementation is just PB+Stat. 
-            // Improving this later with a Stat lookup would be good. For now, assume +PB unless we add stats map.
-            // Let's stick to user request "quick dice rolls" and the current simplistic "d20 + PB" logic 
-            // BUT try to add the stat mod if we can guess it easily? 
-            // Re-reading user request: "UI for viewing stats... ability score improvement".
-            // It implies they want stats to MATTER.
-            // Let's try to map the most common skills.
-            const skillMap = {
-                'Athletics': 'str', 'Acrobatics': 'dex', 'Sleight of Hand': 'dex', 'Stealth': 'dex',
-                'Arcana': 'int', 'History': 'int', 'Investigation': 'int', 'Nature': 'int', 'Religion': 'int',
-                'Animal Handling': 'wis', 'Insight': 'wis', 'Medicine': 'wis', 'Perception': 'wis', 'Survival': 'wis',
-                'Deception': 'cha', 'Intimidation': 'cha', 'Performance': 'cha', 'Persuasion': 'cha'
-            };
-            const stat = skillMap[skill] || 'dex'; // Default to dex if unknown?
-            const mod = getMod(stat);
-            return `
+                        const stat = skillMap[skill] || 'dex';
+                        const mod = getMod(stat);
+                        return `
                             <button class="quick-roll-btn" data-roll="1d20${formatRoll(mod, true)}" data-label="${skill}">
                                 ${skill.substring(0, 4)} ${formatRoll(mod, true)}
                             </button>
-                         `;
-        }).join('')}
-                     ${(c.sidekick.expertiseSkills || []).map(skill => {
-            const skillMap = {
-                'Athletics': 'str', 'Acrobatics': 'dex', 'Sleight of Hand': 'dex', 'Stealth': 'dex',
-                'Arcana': 'int', 'History': 'int', 'Investigation': 'int', 'Nature': 'int', 'Religion': 'int',
-                'Animal Handling': 'wis', 'Insight': 'wis', 'Medicine': 'wis', 'Perception': 'wis', 'Survival': 'wis',
-                'Deception': 'cha', 'Intimidation': 'cha', 'Performance': 'cha', 'Persuasion': 'cha'
-            };
-            const stat = skillMap[skill] || 'dex';
-            const mod = getMod(stat);
-            const bonus = mod + (profBonus * 2);
-            const sign = bonus >= 0 ? '+' : '';
-            return `
+                        `;
+                    }).join('')}
+                    ${(c.sidekick.expertiseSkills || []).map(skill => {
+                        const stat = skillMap[skill] || 'dex';
+                        const mod = getMod(stat);
+                        const bonus = mod + (profBonus * 2);
+                        const sign = bonus >= 0 ? '+' : '';
+                        return `
                             <button class="quick-roll-btn" data-roll="1d20${sign}${bonus}" data-label="${skill} (Expertise)">
                                 ${skill.substring(0, 4)} ${sign}${bonus}
                             </button>
                         `;
-        }).join('')}
-                    
-                    <button class="quick-roll-btn" data-roll="1d20${formatRoll(getMod('str'), true)}" data-label="Melee Atk">
-                        Melee ${formatRoll(getMod('str'), true)}
-                    </button>
-                     <button class="quick-roll-btn" data-roll="1d20${formatRoll(getMod('dex'), true)}" data-label="Ranged Atk">
-                        Ranged ${formatRoll(getMod('dex'), true)}
-                    </button>
+                    }).join('')}
                 </div>
+                ${hasWeapons ? `
+                    <h5>Weapons</h5>
+                    <div class="dice-row weapon-rolls">
+                        ${weaponButtons}
+                    </div>
+                ` : `
+                    <div class="dice-row">
+                        <button class="quick-roll-btn" data-roll="1d20${formatRoll(getMod('str'), true)}" data-label="Melee Atk">
+                            Melee ${formatRoll(getMod('str'), true)}
+                        </button>
+                        <button class="quick-roll-btn" data-roll="1d20${formatRoll(getMod('dex'), true)}" data-label="Ranged Atk">
+                            Ranged ${formatRoll(getMod('dex'), true)}
+                        </button>
+                    </div>
+                `}
             </div>
-    `;
+        `;
     },
 
 
@@ -1405,6 +1529,17 @@ const App = {
         });
         panel.querySelectorAll('.btn-asi').forEach(btn => {
             btn.addEventListener('click', () => this._openLevelUpModal(characterId, 'asi'));
+        });
+
+        // Weapon management buttons
+        panel.querySelectorAll('.btn-add-weapon').forEach(btn => {
+            btn.addEventListener('click', () => this._openLevelUpModal(characterId, 'add-weapon'));
+        });
+        panel.querySelectorAll('.btn-remove-weapon').forEach(btn => {
+            btn.addEventListener('click', () => this._removeWeapon(characterId, parseInt(btn.dataset.idx)));
+        });
+        panel.querySelectorAll('.btn-toggle-grip').forEach(btn => {
+            btn.addEventListener('click', () => this._toggleWeaponGrip(characterId, parseInt(btn.dataset.idx)));
         });
 
         panel.querySelectorAll('.quick-roll-btn').forEach(btn => {
@@ -1478,6 +1613,48 @@ const App = {
         char.inventory.splice(index, 1);
         window.worldManager.updateCharacter(characterId, { inventory: char.inventory });
 
+        this.showCharacterDetail(characterId);
+    },
+
+    _addWeapon(characterId, weaponName) {
+        const char = window.worldManager.getCharacter(characterId);
+        if (!char || !char.sidekick) return;
+
+        const weaponData = this.WEAPONS_DATA[weaponName];
+        if (!weaponData) return;
+
+        const weapons = char.sidekick.weapons || [];
+        weapons.push({
+            name: weaponName,
+            damage: weaponData.damage,
+            type: weaponData.type,
+            properties: [...weaponData.properties],
+            twoHanded: false
+        });
+
+        const sidekick = { ...char.sidekick, weapons };
+        window.worldManager.updateCharacter(characterId, { sidekick });
+        this.showCharacterDetail(characterId);
+    },
+
+    _removeWeapon(characterId, index) {
+        const char = window.worldManager.getCharacter(characterId);
+        if (!char || !char.sidekick || !char.sidekick.weapons) return;
+
+        char.sidekick.weapons.splice(index, 1);
+        window.worldManager.updateCharacter(characterId, { sidekick: char.sidekick });
+        this.showCharacterDetail(characterId);
+    },
+
+    _toggleWeaponGrip(characterId, index) {
+        const char = window.worldManager.getCharacter(characterId);
+        if (!char || !char.sidekick || !char.sidekick.weapons) return;
+
+        const weapon = char.sidekick.weapons[index];
+        if (!weapon) return;
+
+        weapon.twoHanded = !weapon.twoHanded;
+        window.worldManager.updateCharacter(characterId, { sidekick: char.sidekick });
         this.showCharacterDetail(characterId);
     },
 
@@ -1686,6 +1863,48 @@ const App = {
                     });
                 });
             });
+
+        } else if (mode === 'add-weapon') {
+            const weaponNames = Object.keys(this.WEAPONS_DATA);
+            html = `
+                <h3>Add Weapon</h3>
+                <p>Click a weapon to equip it:</p>
+                <div class="weapon-select-grid">
+                    ${weaponNames.map(name => {
+                        const w = this.WEAPONS_DATA[name];
+                        return `
+                            <div class="weapon-option" data-weapon="${name}">
+                                <div class="weapon-option-name">${name}</div>
+                                <div class="weapon-option-stats">${w.damage} ${w.type}</div>
+                                <div class="weapon-option-props">${w.properties.join(', ') || '—'}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            content.innerHTML = html;
+
+            // Clicking a weapon adds it immediately and closes modal
+            content.querySelectorAll('.weapon-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    this._addWeapon(characterId, el.dataset.weapon);
+                    modal.classList.add('hidden');
+                });
+            });
+
+            // Hide confirm button for this mode (instant selection)
+            confirmBtn.style.display = 'none';
+
+            // Close on outside click and restore confirm button
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    confirmBtn.style.display = '';
+                }
+            };
+
+            return; // Skip the confirm button setup below
 
         } else if (mode === 'levelup') {
             html = `
